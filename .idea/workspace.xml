@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cc30138e-7e03-427c-8aa5-e300713b749e" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/boat/draw.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/boat/osm.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/boat/route.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/boat/localTile.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/boat/tests.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/boat/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/boat/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/boat/route.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,10 +21,19 @@
       <file leaf-file-name="main.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="49" column="8" selection-start-line="49" selection-start-column="8" selection-end-line="49" selection-end-column="8" />
+            <state relative-caret-position="576">
+              <caret line="32" column="16" selection-start-line="32" selection-start-column="16" selection-end-line="32" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tests.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/boat/tests.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="418">
+              <caret line="43" selection-start-line="43" selection-end-line="43" />
               <folding>
-                <element signature="e#14#132#0" expanded="true" />
+                <element signature="e#14#66#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -32,8 +42,8 @@
       <file leaf-file-name="osm.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/boat/osm.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+            <state relative-caret-position="202">
+              <caret line="18" column="4" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
               <folding>
                 <element signature="e#13#72#0" expanded="true" />
               </folding>
@@ -41,11 +51,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="route.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="route.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/boat/route.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="121">
-              <caret line="138" selection-start-line="138" selection-end-line="138" />
+            <state relative-caret-position="306">
+              <caret line="116" column="16" selection-start-line="114" selection-start-column="4" selection-end-line="117" selection-end-column="26" />
               <folding>
                 <element signature="e#14#42#0" expanded="true" />
               </folding>
@@ -53,22 +63,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="panic.go" pinned="false" current-in-tab="false">
-        <entry file="file:///usr/lib/go-1.10/src/runtime/panic.go">
+      <file leaf-file-name="utils.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/boat/utils.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="587" selection-start-line="587" selection-end-line="587" />
+            <state relative-caret-position="458">
+              <caret line="104" column="43" selection-start-line="104" selection-start-column="43" selection-end-line="104" selection-end-column="43" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="draw.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/boat/draw.go">
+      <file leaf-file-name="localTile.go" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/boat/localTile.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="505">
-              <caret line="234" column="5" selection-start-line="234" selection-start-column="5" selection-end-line="234" selection-end-column="5" />
+            <state relative-caret-position="364">
+              <caret line="46" column="20" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="20" />
               <folding>
-                <element signature="e#16#146#0" expanded="true" />
+                <element signature="e#14#48#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -100,6 +110,7 @@
       <find>x</find>
       <find>treeCount</find>
       <find>bestJ</find>
+      <find>D:</find>
     </findStrings>
     <replaceStrings>
       <replace>e</replace>
@@ -117,8 +128,11 @@
         <option value="$PROJECT_DIR$/osm/osm.go" />
         <option value="$PROJECT_DIR$/boat/route_test.go" />
         <option value="$PROJECT_DIR$/boat/draw.go" />
+        <option value="$PROJECT_DIR$/boat/utils.go" />
         <option value="$PROJECT_DIR$/main.go" />
         <option value="$PROJECT_DIR$/boat/route.go" />
+        <option value="$PROJECT_DIR$/boat/tests.go" />
+        <option value="$PROJECT_DIR$/boat/localTile.go" />
       </list>
     </option>
   </component>
@@ -129,8 +143,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="632" />
-    <option name="y" value="58" />
+    <option name="x" value="591" />
+    <option name="y" value="94" />
     <option name="width" value="1818" />
     <option name="height" value="1288" />
   </component>
@@ -159,27 +173,6 @@
               <item name="goBoat" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
               <item name="Go SDK 1.10.1" type="20ee2d1f:SyntheticLibraryElementNode" />
-            </path>
-            <path>
-              <item name="goBoat" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Go SDK 1.10.1" type="20ee2d1f:SyntheticLibraryElementNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="goBoat" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Go SDK 1.10.1" type="20ee2d1f:SyntheticLibraryElementNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="image" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="goBoat" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Go SDK 1.10.1" type="20ee2d1f:SyntheticLibraryElementNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="image" type="462c0819:PsiDirectoryNode" />
-              <item name="draw" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -220,20 +213,21 @@
     </configuration>
   </component>
   <component name="ToolWindowManager">
-    <frame x="632" y="58" width="1818" height="1288" extended-state="0" />
+    <frame x="591" y="94" width="1818" height="1288" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="right" id="Database" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32920355" />
       <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32920355" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32920355" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.6044248" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.58141595" />
       <window_info id="Favorites" side_tool="true" />
-      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -250,7 +244,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="10" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -280,20 +274,10 @@
         <state relative-caret-position="-3348" />
       </provider>
     </entry>
-    <entry file="file:///usr/lib/go-1.10/src/image/color/color.go">
+    <entry file="file:///usr/lib/go-1.10/src/runtime/panic.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" column="5" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="49" column="8" selection-start-line="49" selection-start-column="8" selection-end-line="49" selection-end-column="8" />
-          <folding>
-            <element signature="e#14#132#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="208">
+          <caret line="587" selection-start-line="587" selection-end-line="587" />
         </state>
       </provider>
     </entry>
@@ -307,29 +291,63 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/boat/utils.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="458">
+          <caret line="104" column="43" selection-start-line="104" selection-start-column="43" selection-end-line="104" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/boat/osm.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+        <state relative-caret-position="202">
+          <caret line="18" column="4" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
           <folding>
             <element signature="e#13#72#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/lib/go-1.10/src/runtime/panic.go">
+    <entry file="file://$PROJECT_DIR$/boat/route.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="587" selection-start-line="587" selection-end-line="587" />
+        <state relative-caret-position="306">
+          <caret line="116" column="16" selection-start-line="114" selection-start-column="4" selection-end-line="117" selection-end-column="26" />
+          <folding>
+            <element signature="e#14#42#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/boat/route.go">
+    <entry file="file:///usr/lib/go-1.10/src/image/color/color.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="138" selection-start-line="138" selection-end-line="138" />
+        <state relative-caret-position="162">
+          <caret line="9" column="5" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="576">
+          <caret line="32" column="16" selection-start-line="32" selection-start-column="16" selection-end-line="32" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/boat/tests.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="43" selection-start-line="43" selection-end-line="43" />
           <folding>
-            <element signature="e#14#42#0" expanded="true" />
+            <element signature="e#14#66#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/boat/localTile.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="46" column="20" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="20" />
+          <folding>
+            <element signature="e#14#48#0" expanded="true" />
           </folding>
         </state>
       </provider>

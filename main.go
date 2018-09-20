@@ -1,9 +1,6 @@
 package main
 
-import (
-	"github.com/gibeautc/goBoat/boat"
-	"fmt"
-)
+import "github.com/gibeautc/goBoat/boat"
 
 func main(){
 	//myMap:=new(boat.MapData)
@@ -15,57 +12,26 @@ func main(){
 	//fmt.Println("Number of Relations: ",len(myMap.Data.Relations))
 	//myMap.ParseForWater()
 
-	allTests()
-}
+	//allTests()
+
+	//local:=new(boat.TileSet)
+	//id,err:=local.GetNewID()
+	//if err!=nil{
+	//	fmt.Println("Error getting new ID: ",err.Error())
+	//}
+	//fmt.Println("New Tile ID: ",id)
+	//tile:=boat.NewTile()
+	//tile.Id=id
+	//tile.Pickle()
 
 
+	//t:=boat.NewTile()
+	//t.Id=9529
+	//t.UnPickle()
+	//fmt.Println("my ID is :",t.Id)
 
+	boat.CompressionTest()
 
-func allTests(){
-	if squareTest(){
-		fmt.Println("Square: PASS")
-	} else{
-		fmt.Println("Square: FAIL")
-	}
-}
-
-
-
-
-
-
-func squareTest() bool{
-	//sqare polygon
-	var poly boat.Poly
-	var polySet boat.PolySet
-	poly.AddCorner(0,0)
-	poly.AddCorner(0,10)
-	poly.AddCorner(5,5)
-	poly.AddCorner(10,10)
-	poly.AddCorner(10,0)
-	polySet.AddPoly(poly)
-	polySet.Print()
-
-	var start,end boat.Point
-	x:=6.0
-	start.X=1
-	start.Y=x
-	end.X=7
-	end.Y=x
-
-	r,err:=boat.ShortestPath(start,end,polySet)
-	r.Print()
-	boat.Draw(&polySet,&r,start,end)
-	if err!=nil{
-		fmt.Println(err.Error())
-		return false
-	}
-
-	if r.Count!=0{
-		fmt.Println("Route Count should be Zero")
-		return false
-	}
-	return true
 }
 
 

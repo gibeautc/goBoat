@@ -13,16 +13,30 @@ import (
 type Route struct{
 	Points []Point
 	Count int
+	start Point
+	end Point
 }
 
 func (self *Route) Print(){
+	fmt.Println("--Route--")
+	fmt.Println("Start:")
+	fmt.Println("X: ",self.start.X)
+	fmt.Println("Y: ",self.start.Y)
+	fmt.Println("")
+
 	for x:=0;x<self.Count;x++{
+		fmt.Println("Leg-",x)
 		cP:=self.Points[x]
+
 		fmt.Println("X: ",cP.X)
 		fmt.Println("Y: ",cP.Y)
 		fmt.Println("D: ",cP.totalDistance)
 		fmt.Println("")
 	}
+
+	fmt.Println("End:")
+	fmt.Println("X: ",self.end.X)
+	fmt.Println("Y: ",self.end.Y)
 
 }
 
@@ -98,7 +112,7 @@ func (self *PolySet) MinMaxY() (float64,float64){
 func Draw(pS *PolySet,rT *Route,start Point,end Point){
 	minX,maxX:=pS.MinMaxX()
 	minY,maxY:=pS.MinMaxY()
-	imgSize:=200
+	imgSize:=2000
 	r:=image.Rect(0,0,imgSize+int(float64(imgSize)*.25),imgSize+int(float64(imgSize)*.25))
 	var sP,eP Point
 	img:=image.NewAlpha(r)
@@ -135,7 +149,7 @@ func Draw(pS *PolySet,rT *Route,start Point,end Point){
 		imageCount:=0
 		SaveImage(img,"route"+strconv.Itoa(imageCount)+".jpg")
 		imageCount++
-		for x:=0;x<rT.Count;x++{
+		for x:=0;x<rT.Count-1;x++{
 			drawRtLine(img,rT.Points[x],rT.Points[x+1],minX,maxX,minY,maxY,imgSize,true)
 			SaveImage(img,"route"+strconv.Itoa(imageCount)+".jpg")
 			imageCount++
@@ -256,7 +270,8 @@ func ShortestPath(start Point,end Point,allPolys PolySet) (Route,error){
 	var route Route
 	pointList:=make([]Point,0)	
 	var treeCount int
-
+	route.start=start
+	route.end=end
 	sX:=start.X
 	sY:=start.Y
 	eX:=end.X
@@ -277,13 +292,8 @@ func ShortestPath(start Point,end Point,allPolys PolySet) (Route,error){
 		return route,nil
 	}
 
-	var sP,eP Point
-	sP.X=sX
-	sP.Y=sY
 
-	eP.X=eX
-	eP.Y=eY
-	pointList=append(pointList,sP)
+	pointList=append(pointList,start)
 	for polyI:=0;polyI<allPolys.count;polyI++{
 		for i:=0;i<allPolys.poly[polyI].corners;i++{
 			var tempP Point
@@ -293,7 +303,7 @@ func ShortestPath(start Point,end Point,allPolys PolySet) (Route,error){
 		}
 	}
 	//not sure if if matters yet that the endpoint is actually put at the end, but that is the way the original code was
-	pointList=append(pointList,eP)
+	pointList=append(pointList,end)
 	treeCount=1
 	pointList[0].totalDistance=0.0
 
@@ -301,15 +311,16 @@ func ShortestPath(start Point,end Point,allPolys PolySet) (Route,error){
 	bestJ:=0
 	bestI:=0
 
-	for bestJ<len(pointList)-1{
+	for bestJ!=len(pointList)-1{
 		bestDist:=math.MaxFloat64
 		for i:=0;i<treeCount;i++{
 			for j:=treeCount;j<len(pointList);j++{
+
 				if lineInPolygonSet(pointList[i].X,pointList[i].Y,pointList[j].X,pointList[j].Y,allPolys){
-					newDist:=pointList[i].totalDistance+calcDist(pointList[i].X,pointList[i].Y,pointList[j].X,pointList[j].X)
+					newDist:=pointList[treeCount].totalDistance+calcDist(pointList[i].X,pointList[i].Y,pointList[j].X,pointList[j].X)
 					if newDist<bestDist{
 						bestDist=newDist
-						bestI=i
+						bestI=treeCount
 						bestJ=j
 					}
 				}
