@@ -30,8 +30,10 @@ func main(){
 	//t.UnPickle()
 	//fmt.Println("my ID is :",t.Id)
 
-	boat.CompressionTest()
+	//boat.CompressionTest()
 
+	local:=new(boat.TileSet)
+	local.CheckMemoryAndCompress()
 }
 
 

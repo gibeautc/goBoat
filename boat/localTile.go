@@ -13,6 +13,7 @@ import (
 	"os"
 	"image"
 	"image/color"
+	"os/exec"
 )
 
 /*
@@ -43,9 +44,12 @@ if we have Tile Data adjsant to that Tile, the Tile Id will be listed in the str
  */
 
 
-const tileSize=1280  //has to be even multiples of 2
-const activeTileLimit=5  //probably can be higher, but for testing we will keep it low
-const maxCompression=10
+const (
+	tileSize=1280  //has to be even multiples of 2
+ 	activeTileLimit=5  //probably can be higher, but for testing we will keep it low
+	maxCompression=10
+	maxDiskSpace= 20 //in MB
+)
 
 
 
@@ -55,17 +59,88 @@ type TileSet struct{
 }
 
 
+func GetDiskSpaceOfPath(path string) float32{
+	out, err := exec.Command("du","-hs", path).Output()
+	if err != nil {
+		fmt.Println(err.Error())
+		return 0.0
+	}
+	fmt.Printf("Memory Used is %s\n", out)
+	elems:=strings.Split(string(out)," ")
+	fmt.Println(elems)
+	var pref float32
+	var valueString string
+	wholeString:=elems[0]
+	wholeString=strings.Replace(wholeString," ","",0)
+	if strings.HasSuffix(wholeString,"B"){
+		pref=1/(1000*1000)
+		valueString=strings.Replace(elems[0],"B","",1)
+	}else if strings.HasSuffix(wholeString,"K"){
+		pref=1/1000
+		valueString=strings.Replace(elems[0],"K","",1)
+	}else if strings.HasSuffix(wholeString,"M"){
+		pref=1.0
+		valueString=strings.Replace(elems[0],"M","",1)
+	}else if strings.HasSuffix(wholeString,"G"){
+		pref=1000
+		valueString=strings.Replace(elems[0],"G","",1)
+	}else{
+		fmt.Println("no suffix found....")
+		return 0.0
+	}
+	fmt.Println(valueString)
+	value,err:=strconv.ParseFloat(valueString,32)
+	if err!=nil{
+		fmt.Println(err.Error())
+		return 0.0
+	}
+	return float32(value)*pref
+}
 
-/*
-Given a point, return the index in activeTiles where the tile is that contains the point
-Will search activeTiles first, then tiles on disk. If one is still not found, then create a new tile, put it
-in activeTiles and return index
+func (self * TileSet) CheckMemoryAndCompress() {
+	/*
+	Check the amount of spaced used by /tiles    and maybe /tileImages even thought that probably wont exist out in the wild
+	if space used is more then maxDiskSpace then start compressing tiles untill it is below that threshold
+	 */
+
+	 //du -hs tiles/
+	used:=GetDiskSpaceOfPath("tiles/")
+	fmt.Println(used)
+
+}
 
 
-Since this action could re-order activeTiles, any previously requested indexes are no longer valid
 
- */
+func (self * TileSet) LoadTileById(id uint32) (int,error){
+	/*
+	given an id of a tiles, return the index in activeTiles where it resides
+
+	like loading tile for a point, it could re-oder/replace what is in activeTiles so any previous index should not be trusted
+	 */
+
+	//check if its in activeTiles first
+
+
+	//then check on disk
+
+
+
+	//since we are looking for one by id, if we have not found it, return error
+	return 0,nil
+}
+
+
+
+
 func (self *TileSet) LoadTileForPoint(p Point) (int,error){
+	/*
+	Given a point, return the index in activeTiles where the tile is that contains the point
+	Will search activeTiles first, then tiles on disk. If one is still not found, then create a new tile, put it
+	in activeTiles and return index
+
+	Since this action could re-order activeTiles, any previously requested indexes are no longer valid
+
+	 */
 	for x:=0;x<len(self.activeTiles);x++{
 		if self.activeTiles[x].isPointInTile(p){
 			return x,nil
