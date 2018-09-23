@@ -2,7 +2,7 @@ package main
 
 import "github.com/gibeautc/goBoat/boat"
 
-func main(){
+func main() {
 	//myMap:=new(boat.MapData)
 	//st:=time.Now()
 	//myMap.Load("mapLarge")
@@ -12,7 +12,7 @@ func main(){
 	//fmt.Println("Number of Relations: ",len(myMap.Data.Relations))
 	//myMap.ParseForWater()
 
-	//allTests()
+	boat.SquareTest()
 
 	//local:=new(boat.TileSet)
 	//id,err:=local.GetNewID()
@@ -24,7 +24,6 @@ func main(){
 	//tile.Id=id
 	//tile.Pickle()
 
-
 	//t:=boat.NewTile()
 	//t.Id=9529
 	//t.UnPickle()
@@ -32,9 +31,6 @@ func main(){
 
 	//boat.CompressionTest()
 
-	local:=new(boat.TileSet)
-	local.CheckMemoryAndCompress()
+	//local:=new(boat.TileSet)
+	//local.CheckMemoryAndCompress()
 }
-
-
-
