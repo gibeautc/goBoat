@@ -53,6 +53,7 @@ func (self *Poly) AddCorner(x float64, y float64) {
 	self.x = append(self.x, x)
 	self.y = append(self.y, y)
 	self.corners++
+
 }
 
 func (self *Poly) Print() {
@@ -74,105 +75,15 @@ func (self *Poly) Verify() bool {
 		return false
 	}
 
-	for i := 0; i < self.corners-2; i++ {
-		for j := 0; j < self.corners-2; j++ {
-			if i == j {
-				continue
-			}
-			if linesCross(self.x[i], self.y[i], self.x[i+1], self.y[i+1], self.x[j], self.y[j], self.x[j+1], self.y[j+1]) {
-				return false
-			}
-		}
-	}
 	//routing doesnt want duplicate points, so remove the first node
 	self.x = self.x[1:]
 	self.y = self.y[1:]
+	if len(self.x) != len(self.y) {
+		//not sure how this would happen, but still bad
+		return false
+	}
+	self.corners = len(self.x)
 	return true
-}
-
-// Given three colinear points p, q, r, the function checks if
-// point q lies on line segment 'pr'
-func onSegment(p Point, q Point, r Point) bool {
-	if q.X <= math.Max(p.X, r.X) && q.X >= math.Min(p.X, r.X) && q.Y <= math.Max(p.Y, r.Y) && q.Y >= math.Min(p.Y, r.Y) {
-		return true
-	}
-	return false
-}
-
-// To find orientation of ordered triplet (p, q, r).
-// The function returns following values
-// 0 --> p, q and r are colinear
-// 1 --> Clockwise
-// 2 --> Counterclockwise
-func orientation(p Point, q Point, r Point) int {
-	// See https://www.geeksforgeeks.org/orientation-3-ordered-points/
-	// for details of below formula.
-	val := (q.Y-p.Y)*(r.X-q.X) - (q.X-p.X)*(r.Y-q.Y)
-
-	if val == 0 {
-		return 0
-	} // colinear
-
-	if val > 0 {
-		return 1
-	}
-	return 2 // clock or counterclock wise
-}
-
-func linesCross(l1Sx float64, l1Sy float64, l1Ex float64, l1Ey float64, l2Sx float64, l2Sy float64, l2Ex float64, l2Ey float64) bool {
-
-	var p1, q1, p2, q2 Point
-	p1.X = l1Sx
-	p1.Y = l1Sy
-
-	q1.X = l1Ex
-	q1.Y = l1Ex
-
-	p2.X = l2Sx
-	p2.Y = l2Sy
-
-	q2.X = l2Ex
-	q2.Y = l2Ey
-
-	//bool doIntersect(Point p1, Point q1, Point p2, Point q2)
-
-	// Find the four orientations needed for general and
-	// special cases
-	o1 := orientation(p1, q1, p2)
-	o2 := orientation(p1, q1, q2)
-	o3 := orientation(p2, q2, p1)
-	o4 := orientation(p2, q2, q1)
-
-	// General case
-	//if o1 != o2 && o3 != o4 {
-	//	fmt.Println("General Case")
-	//	return true
-	//}
-
-	// Special Cases
-	// p1, q1 and p2 are colinear and p2 lies on segment p1q1
-	if o1 == 0 && onSegment(p1, p2, q1) {
-		fmt.Println("General Case")
-		return true
-	}
-
-	// p1, q1 and q2 are colinear and q2 lies on segment p1q1
-	if o2 == 0 && onSegment(p1, q2, q1) {
-		return true
-	}
-
-	// p2, q2 and p1 are colinear and p1 lies on segment p2q2
-	if o3 == 0 && onSegment(p2, p1, q2) {
-		return true
-	}
-
-	// p2, q2 and q1 are colinear and q1 lies on segment p2q2
-	if o4 == 0 && onSegment(p2, q1, q2) {
-		return true
-	}
-
-	return false // Doesn't fall in any of the above cases
-
 }
 
 type PolySet struct {
@@ -226,7 +137,7 @@ func (self *PolySet) MinMaxY() (float64, float64) {
 			if self.poly[x].y[y] < minY {
 				minY = self.poly[x].y[y]
 			}
-			if self.poly[x].x[y] > maxY {
+			if self.poly[x].y[y] > maxY {
 				maxY = self.poly[x].y[y]
 			}
 		}
@@ -281,6 +192,33 @@ func Draw(pS *PolySet, rT *Route, start Point, end Point) {
 		SaveImage(img, "route"+strconv.Itoa(imageCount)+".jpg")
 	}
 
+}
+func DrawWorld(pS *PolySet) {
+	minX, maxX := pS.MinMaxX()
+	minY, maxY := pS.MinMaxY()
+	imgSize := 2000
+	r := image.Rect(0, 0, imgSize+int(float64(imgSize)*.25), imgSize+int(float64(imgSize)*.25))
+	var sP, eP Point
+	img := image.NewAlpha(r)
+
+	for x := 0; x < pS.count; x++ {
+		for y := 0; y < pS.poly[x].corners-1; y++ {
+			sP.X = pS.poly[x].x[y]
+			sP.Y = pS.poly[x].y[y]
+			eP.X = pS.poly[x].x[y+1]
+			eP.Y = pS.poly[x].y[y+1]
+			drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
+		}
+
+		//last element back to start
+		sP.X = pS.poly[x].x[0]
+		sP.Y = pS.poly[x].y[0]
+		eP.X = pS.poly[x].x[len(pS.poly[x].y)-1]
+		eP.Y = pS.poly[x].y[len(pS.poly[x].y)-1]
+		drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
+	}
+
+	SaveImage(img, "world.jpg")
 }
 func drawRtLine(img draw.Image, start Point, end Point, minX float64, maxX float64, minY float64, maxY float64, imgSize int, isRoute bool) {
 	var sP, eP image.Point
@@ -414,6 +352,7 @@ func ShortestPath(start Point, end Point, allPolys PolySet) (Route, error) {
 	//check if straight line solution works
 	if lineInPolygonSet(sX, sY, eX, eY, allPolys) {
 		route.Count = 0
+		fmt.Print("StaightLine Route Works")
 		return route, nil
 	}
 

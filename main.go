@@ -1,36 +1,87 @@
 package main
 
-import "github.com/gibeautc/goBoat/boat"
+import (
+	"database/sql"
+	"fmt"
+	"github.com/gibeautc/goBoat/boat"
+	"time"
+)
+
+type App struct {
+	conn        *sql.DB
+	osmMap      *boat.MapData
+	localMap    *boat.TileSet
+	curLocation *boat.Point
+	localIndex  int
+	destination *boat.Point
+	route       boat.Route
+	allPoly     *boat.PolySet
+}
 
 func main() {
-	//myMap:=new(boat.MapData)
-	//st:=time.Now()
-	//myMap.Load("mapLarge")
-	//fmt.Println("Load Time: ",time.Since(st))
-	//fmt.Println("Number of Nodes: ",len(myMap.Data.Nodes))
-	//fmt.Println("Number of Ways: ",len(myMap.Data.Ways))
-	//fmt.Println("Number of Relations: ",len(myMap.Data.Relations))
-	//myMap.ParseForWater()
+	var err error
+	app := new(App)
+	app.conn = boat.ConnectToDB()
+	app.osmMap = new(boat.MapData)
+	app.localMap = new(boat.TileSet)
+	app.allPoly = new(boat.PolySet)
+	st := time.Now()
+	err = app.osmMap.Load("map.osm")
+	if err != nil {
+		fmt.Println("Failed to load map")
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Load Time: ", time.Since(st))
+		fmt.Println("Number of Nodes: ", len(app.osmMap.Data.Nodes))
+		fmt.Println("Number of Ways: ", len(app.osmMap.Data.Ways))
+		fmt.Println("Number of Relations: ", len(app.osmMap.Data.Relations))
+		app.osmMap.ParseForWater()
 
-	boat.SquareTest()
+		for i := 0; i < len(app.osmMap.Data.Ways); i++ {
+			p := new(boat.Poly)
+			for x := 0; x < len(app.osmMap.Data.Ways[i].Nds); x++ {
+				nid := app.osmMap.Data.Ways[i].Nds[x].ID
+				for y := 0; y < len(app.osmMap.Data.Nodes); y++ {
+					if nid == app.osmMap.Data.Nodes[y].ID {
+						n := app.osmMap.Data.Nodes[y]
+						p.AddCorner(n.Lat, n.Lng)
+						break
+					}
+				}
 
-	//local:=new(boat.TileSet)
-	//id,err:=local.GetNewID()
-	//if err!=nil{
-	//	fmt.Println("Error getting new ID: ",err.Error())
-	//}
-	//fmt.Println("New Tile ID: ",id)
-	//tile:=boat.NewTile()
-	//tile.Id=id
-	//tile.Pickle()
+			}
+			app.allPoly.AddPoly(*p)
+		}
 
-	//t:=boat.NewTile()
-	//t.Id=9529
-	//t.UnPickle()
-	//fmt.Println("my ID is :",t.Id)
+		app.allPoly.Verify()
+	}
+	app.curLocation = new(boat.Point)
+	app.curLocation.X = 44.591303
+	app.curLocation.Y = -123.058342
 
-	//boat.CompressionTest()
+	app.destination = new(boat.Point)
+	app.destination.X = 44.591327
+	app.destination.Y = -123.065849
+	st = time.Now()
+	app.localIndex, err = app.localMap.LoadTileForPoint(*app.curLocation)
+	fmt.Println("Load Time: ", time.Since(st))
+	fmt.Println("We are currently in tile with index:", app.localIndex)
+	if err != nil {
+		fmt.Println("Failed to get current local tile....exiting")
+		fmt.Println(err.Error())
+		return
+	}
+	app.route, err = boat.ShortestPath(*app.curLocation, *app.destination, *app.allPoly)
+	if err != nil {
+		fmt.Println("Routing Error!")
+		fmt.Println(err.Error())
+		boat.DrawWorld(app.allPoly)
+	}
+	app.route.Print()
 
-	//local:=new(boat.TileSet)
-	//local.CheckMemoryAndCompress()
+	if err == nil {
+		boat.Draw(app.allPoly, &app.route, *app.curLocation, *app.destination)
+	}
+
+	fmt.Println("nothing else to do for now")
 }
