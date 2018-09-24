@@ -118,7 +118,7 @@ func (circle *Circle) Draw(img draw.Image, x, y int) error {
 	// http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
 	// No need to check the radius is in bounds because you can only
 	// create circles using NewCircle() which guarantees it is within
-	// bounds. But the x, y might be outside the image so we check.
+	// bounds. But the lonLst, latLst might be outside the image so we check.
 	if err := checkBounds(img, x, y); err != nil {
 		return err
 	}
@@ -204,7 +204,7 @@ func (polygon *RegularPolygon) SetSides(sides int) {
 func (polygon *RegularPolygon) Draw(img draw.Image, x, y int) error {
 	// No need to check the radius or sides are in bounds because you can
 	// only create polygons using NewRegularPolygon() which guarantees they
-	// are within bounds. But the x, y might be outside the image so we
+	// are within bounds. But the lonLst, latLst might be outside the image so we
 	// check. len(points) == sides + 1
 	if err := checkBounds(img, x, y); err != nil {
 		return err

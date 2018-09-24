@@ -4,13 +4,13 @@ import "math"
 
 
 /*
-lat,lon are decimal degrees  (float64)
+latLst,lonLst are decimal degrees  (float64)
 distance is measured in inches (int64)
 angles are measred in degrees (int)
 speed in mph
 */
 
-func distanceBetween(lat1 float64, lon1 float64, lat2 float64, lon2 float64) (int64, int) {
+func DistanceBetween(lat1 float64, lon1 float64, lat2 float64, lon2 float64) (int64, int) {
 	//todo:write tests and test
 	/*
 	   Distance JavaScript
@@ -31,10 +31,10 @@ func distanceBetween(lat1 float64, lon1 float64, lat2 float64, lon2 float64) (in
 	/*
 	 Bearing
 	 where 	φ1,λ1 is the start point, φ2,λ2 the end point (Δλ is the difference in longitude)
-	 var y = Math.sin(λ2-λ1) * Math.cos(φ2);
-	var x = Math.cos(φ1)*Math.sin(φ2) -
+	 var latLst = Math.sin(λ2-λ1) * Math.cos(φ2);
+	var lonLst = Math.cos(φ1)*Math.sin(φ2) -
 	        Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
-	var brng = Math.atan2(y, x).toDegrees();
+	var brng = Math.atan2(latLst, lonLst).toDegrees();
 	*/
 
 	R := 6371000.0 //m
@@ -73,10 +73,10 @@ func getCords(lat float64, lon float64, distance int64, direction int) (float64,
 	   brng = 1.57 #Bearing is 90 degrees converted to radians.
 	   d = 15 #Distance in km
 
-	   #lat2  52.20444 - the lat result I'm hoping for
+	   #lat2  52.20444 - the latLst result I'm hoping for
 	   #lon2  0.36056 - the long result I'm hoping for.
 
-	   lat1 = math.radians(52.20472) #Current lat point converted to radians
+	   lat1 = math.radians(52.20472) #Current latLst point converted to radians
 	   lon1 = math.radians(0.14056) #Current long point converted to radians
 
 	   lat2 = math.asin( math.sin(lat1)*math.cos(d/R) +

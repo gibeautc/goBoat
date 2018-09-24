@@ -57,10 +57,10 @@ func SquareTest() bool {
 
 	var start, end Point
 	x := 60.0
-	start.X = 10
-	start.Y = 30
-	end.X = 70
-	end.Y = x
+	start.Lon = 10
+	start.Lat = 30
+	end.Lon = 70
+	end.Lat = x
 	if !polySet.Verify() {
 		fmt.Println("Polygon Set Failed Verification, should not proced with Shortest Path as it could give bad results")
 	}

@@ -44,7 +44,8 @@ func (self *MapData) ParseForWater() error {
 		for y := 0; y < len(self.Data.Ways[x].RTags); y++ {
 			curTag := self.Data.Ways[x].RTags[y]
 			if curTag.Key == "waterway" {
-
+				fmt.Println("Found Waterway:", self.Data.Ways[x].ID)
+				newWay = append(newWay, self.Data.Ways[x])
 			}
 			if curTag.Key == "natural" && curTag.Value == "water" {
 				fmt.Println("Found Waterway:", self.Data.Ways[x].ID)

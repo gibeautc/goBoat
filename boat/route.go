@@ -22,8 +22,8 @@ type Route struct {
 func (self *Route) Print() {
 	fmt.Println("--Route--")
 	fmt.Println("Start:")
-	fmt.Println("X: ", self.start.X)
-	fmt.Println("Y: ", self.start.Y)
+	fmt.Println("Lon: ", self.start.Lon)
+	fmt.Println("Lat: ", self.start.Lat)
 	fmt.Println("Distance: ", self.Distance)
 	fmt.Println("")
 
@@ -31,34 +31,34 @@ func (self *Route) Print() {
 		fmt.Println("Leg-", x)
 		cP := self.Points[x]
 
-		fmt.Println("X: ", cP.X)
-		fmt.Println("Y: ", cP.Y)
+		fmt.Println("Lon: ", cP.Lon)
+		fmt.Println("Lat: ", cP.Lat)
 		fmt.Println("D: ", cP.totalDistance)
 		fmt.Println("")
 	}
 
 	fmt.Println("End:")
-	fmt.Println("X: ", self.end.X)
-	fmt.Println("Y: ", self.end.Y)
+	fmt.Println("Lon: ", self.end.Lon)
+	fmt.Println("Lat: ", self.end.Lat)
 
 }
 
 type Poly struct {
-	y       []float64
-	x       []float64
+	latLst  []float64
+	lonLst  []float64
 	corners int
 }
 
-func (self *Poly) AddCorner(x float64, y float64) {
-	self.x = append(self.x, x)
-	self.y = append(self.y, y)
+func (self *Poly) AddCorner(lon float64, lat float64) {
+	self.lonLst = append(self.lonLst, lon)
+	self.latLst = append(self.latLst, lat)
 	self.corners++
 
 }
 
 func (self *Poly) Print() {
 	for x := 0; x < self.corners; x++ {
-		fmt.Printf("Corner-> x: %f y: %f\n", self.x[x], self.y[x])
+		fmt.Printf("Corner-> lonLst: %f latLst: %f\n", self.lonLst[x], self.latLst[x])
 	}
 	fmt.Println("")
 }
@@ -70,19 +70,19 @@ func (self *Poly) Verify() bool {
 	*/
 
 	//closed is the easiest to check, do that first
-	if self.x[0] != self.x[len(self.x)-1] || self.y[0] != self.y[len(self.y)-1] {
+	if self.lonLst[0] != self.lonLst[len(self.lonLst)-1] || self.latLst[0] != self.latLst[len(self.latLst)-1] {
 		fmt.Println("First and Last dont match")
 		return false
 	}
 
 	//routing doesnt want duplicate points, so remove the first node
-	self.x = self.x[1:]
-	self.y = self.y[1:]
-	if len(self.x) != len(self.y) {
+	self.lonLst = self.lonLst[1:]
+	self.latLst = self.latLst[1:]
+	if len(self.lonLst) != len(self.latLst) {
 		//not sure how this would happen, but still bad
 		return false
 	}
-	self.corners = len(self.x)
+	self.corners = len(self.lonLst)
 	return true
 }
 
@@ -115,12 +115,12 @@ func (self *PolySet) MinMaxX() (float64, float64) {
 	minX = 400.0
 	maxX = -400.0
 	for x := 0; x < self.count; x++ {
-		for y := 0; y < len(self.poly[x].x); y++ {
-			if self.poly[x].x[y] < minX {
-				minX = self.poly[x].x[y]
+		for y := 0; y < len(self.poly[x].lonLst); y++ {
+			if self.poly[x].lonLst[y] < minX {
+				minX = self.poly[x].lonLst[y]
 			}
-			if self.poly[x].x[y] > maxX {
-				maxX = self.poly[x].x[y]
+			if self.poly[x].lonLst[y] > maxX {
+				maxX = self.poly[x].lonLst[y]
 			}
 		}
 	}
@@ -133,12 +133,12 @@ func (self *PolySet) MinMaxY() (float64, float64) {
 	minY = 400.0
 	maxY = -400.0
 	for x := 0; x < self.count; x++ {
-		for y := 0; y < len(self.poly[x].y); y++ {
-			if self.poly[x].y[y] < minY {
-				minY = self.poly[x].y[y]
+		for y := 0; y < len(self.poly[x].latLst); y++ {
+			if self.poly[x].latLst[y] < minY {
+				minY = self.poly[x].latLst[y]
 			}
-			if self.poly[x].y[y] > maxY {
-				maxY = self.poly[x].y[y]
+			if self.poly[x].latLst[y] > maxY {
+				maxY = self.poly[x].latLst[y]
 			}
 		}
 	}
@@ -155,18 +155,18 @@ func Draw(pS *PolySet, rT *Route, start Point, end Point) {
 
 	for x := 0; x < pS.count; x++ {
 		for y := 0; y < pS.poly[x].corners-1; y++ {
-			sP.X = pS.poly[x].x[y]
-			sP.Y = pS.poly[x].y[y]
-			eP.X = pS.poly[x].x[y+1]
-			eP.Y = pS.poly[x].y[y+1]
+			sP.Lon = pS.poly[x].lonLst[y]
+			sP.Lat = pS.poly[x].latLst[y]
+			eP.Lon = pS.poly[x].lonLst[y+1]
+			eP.Lat = pS.poly[x].latLst[y+1]
 			drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 		}
 
 		//last element back to start
-		sP.X = pS.poly[x].x[0]
-		sP.Y = pS.poly[x].y[0]
-		eP.X = pS.poly[x].x[len(pS.poly[x].y)-1]
-		eP.Y = pS.poly[x].y[len(pS.poly[x].y)-1]
+		sP.Lon = pS.poly[x].lonLst[0]
+		sP.Lat = pS.poly[x].latLst[0]
+		eP.Lon = pS.poly[x].lonLst[len(pS.poly[x].latLst)-1]
+		eP.Lat = pS.poly[x].latLst[len(pS.poly[x].latLst)-1]
 		drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 	}
 
@@ -203,18 +203,18 @@ func DrawWorld(pS *PolySet) {
 
 	for x := 0; x < pS.count; x++ {
 		for y := 0; y < pS.poly[x].corners-1; y++ {
-			sP.X = pS.poly[x].x[y]
-			sP.Y = pS.poly[x].y[y]
-			eP.X = pS.poly[x].x[y+1]
-			eP.Y = pS.poly[x].y[y+1]
+			sP.Lon = pS.poly[x].lonLst[y]
+			sP.Lat = pS.poly[x].latLst[y]
+			eP.Lon = pS.poly[x].lonLst[y+1]
+			eP.Lat = pS.poly[x].latLst[y+1]
 			drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 		}
 
 		//last element back to start
-		sP.X = pS.poly[x].x[0]
-		sP.Y = pS.poly[x].y[0]
-		eP.X = pS.poly[x].x[len(pS.poly[x].y)-1]
-		eP.Y = pS.poly[x].y[len(pS.poly[x].y)-1]
+		sP.Lon = pS.poly[x].lonLst[0]
+		sP.Lat = pS.poly[x].latLst[0]
+		eP.Lon = pS.poly[x].lonLst[len(pS.poly[x].latLst)-1]
+		eP.Lat = pS.poly[x].latLst[len(pS.poly[x].latLst)-1]
 		drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 	}
 
@@ -222,11 +222,11 @@ func DrawWorld(pS *PolySet) {
 }
 func drawRtLine(img draw.Image, start Point, end Point, minX float64, maxX float64, minY float64, maxY float64, imgSize int, isRoute bool) {
 	var sP, eP image.Point
-	sP.X = mapFloatToInt(start.X, minX, maxX, 0, imgSize)
-	sP.Y = mapFloatToInt(start.Y, minY, maxY, 0, imgSize)
-	eP.X = mapFloatToInt(end.X, minX, maxX, 0, imgSize)
-	eP.Y = mapFloatToInt(end.Y, minY, maxY, 0, imgSize)
-	fmt.Printf("Dawing line from x: %d y: %d TO x:%d y:%d\n", sP.X, sP.Y, eP.X, eP.Y)
+	sP.X = mapFloatToInt(start.Lon, minX, maxX, 0, imgSize)
+	sP.Y = mapFloatToInt(start.Lat, minY, maxY, 0, imgSize)
+	eP.X = mapFloatToInt(end.Lon, minX, maxX, 0, imgSize)
+	eP.Y = mapFloatToInt(end.Lat, minY, maxY, 0, imgSize)
+	//fmt.Printf("Drawing line from lonLst: %d latLst: %d TO lonLst:%d latLst:%d\n", sP.X, sP.Y, eP.X, eP.Y)
 	if isRoute {
 		c := color.Alpha16{A: 0xFF0F}
 		drawLine(img, sP, eP, c)
@@ -242,7 +242,7 @@ func (self *PolySet) AddPoly(p Poly) {
 }
 
 type Point struct {
-	X, Y          float64
+	Lon, Lat      float64
 	totalDistance float64
 	prev          int
 }
@@ -263,8 +263,8 @@ func pointInPolygonSet(testX float64, testY float64, allPolys PolySet) bool {
 			if j == allPolys.poly[polyI].corners {
 				j = 0
 			}
-			if allPolys.poly[polyI].y[i] < testY && allPolys.poly[polyI].y[j] >= testY || allPolys.poly[polyI].y[j] < testY && allPolys.poly[polyI].y[i] >= testY {
-				if allPolys.poly[polyI].x[i]+(testY-allPolys.poly[polyI].y[i])/(allPolys.poly[polyI].y[j]-allPolys.poly[polyI].y[i])*(allPolys.poly[polyI].x[j]-allPolys.poly[polyI].x[i]) < testX {
+			if allPolys.poly[polyI].latLst[i] < testY && allPolys.poly[polyI].latLst[j] >= testY || allPolys.poly[polyI].latLst[j] < testY && allPolys.poly[polyI].latLst[i] >= testY {
+				if allPolys.poly[polyI].lonLst[i]+(testY-allPolys.poly[polyI].latLst[i])/(allPolys.poly[polyI].latLst[j]-allPolys.poly[polyI].latLst[i])*(allPolys.poly[polyI].lonLst[j]-allPolys.poly[polyI].lonLst[i]) < testX {
 					oddNodes = !oddNodes
 				}
 			}
@@ -287,10 +287,10 @@ func lineInPolygonSet(testSX float64, testSY float64, testEX float64, testEY flo
 				j = 0
 			}
 
-			sX := allPolys.poly[polyI].x[i] - testSX
-			sY := allPolys.poly[polyI].y[i] - testSY
-			eX := allPolys.poly[polyI].x[j] - testSX
-			eY := allPolys.poly[polyI].y[j] - testSY
+			sX := allPolys.poly[polyI].lonLst[i] - testSX
+			sY := allPolys.poly[polyI].latLst[i] - testSY
+			eX := allPolys.poly[polyI].lonLst[j] - testSX
+			eY := allPolys.poly[polyI].latLst[j] - testSY
 			if sX == 0. && sY == 0. && eX == testEX && eY == testEY || eX == 0. && eY == 0. && sX == testEX && sY == testEY {
 				return true
 			}
@@ -321,8 +321,10 @@ line route from start to end
 */
 
 func pointDis(allPolys PolySet, from Point, to Point) float64 {
-	if lineInPolygonSet(from.X, from.Y, to.X, to.Y, allPolys) {
-		return calcDist(from.X, from.Y, to.X, to.Y)
+	if lineInPolygonSet(from.Lon, from.Lat, to.Lon, to.Lat, allPolys) {
+		//return calcDist(from.Lon, from.Lat, to.Lon, to.Lat)
+		dist,_:=DistanceBetween(from.Lon,from.Lat,to.Lon,to.Lat)
+		return float64(dist)
 	}
 	return math.MaxFloat64
 }
@@ -333,10 +335,10 @@ func ShortestPath(start Point, end Point, allPolys PolySet) (Route, error) {
 	pointList := make([]Point, 0)
 	route.start = start
 	route.end = end
-	sX := start.X
-	sY := start.Y
-	eX := end.X
-	eY := end.Y
+	sX := start.Lon
+	sY := start.Lat
+	eX := end.Lon
+	eY := end.Lat
 
 	//check to make sure start and end points are inside polys
 	//not sure if this is really needed as our starting location will be our current location, and we know we get to where we are.
@@ -360,8 +362,8 @@ func ShortestPath(start Point, end Point, allPolys PolySet) (Route, error) {
 	for polyI := 0; polyI < allPolys.count; polyI++ {
 		for i := 0; i < allPolys.poly[polyI].corners; i++ {
 			var tempP Point
-			tempP.X = allPolys.poly[polyI].x[i]
-			tempP.Y = allPolys.poly[polyI].y[i]
+			tempP.Lon = allPolys.poly[polyI].lonLst[i]
+			tempP.Lat = allPolys.poly[polyI].latLst[i]
 			tempP.totalDistance = math.MaxFloat64
 			pointList = append(pointList, tempP)
 		}
@@ -371,6 +373,10 @@ func ShortestPath(start Point, end Point, allPolys PolySet) (Route, error) {
 	pointList[0].totalDistance = 0.0
 
 	for i := 0; i < len(pointList); i++ {
+		fmt.Println(float64(i)/float64(len(pointList)))
+		if pointList[i].totalDistance==math.MaxFloat64{
+			continue
+		}
 		for j := 0; j < len(pointList); j++ {
 			if i == j {
 				continue

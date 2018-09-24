@@ -294,8 +294,8 @@ func (self *Tile) UnPickle() error{
 
 
 func(self *Tile) isPointInTile(p Point) bool{
-	if p.X<self.NE.X && p.X>self.NW.X{
-		if p.Y>self.SW.Y && p.Y<self.NW.Y{
+	if p.Lon <self.NE.Lon && p.Lon >self.NW.Lon {
+		if p.Lat >self.SW.Lat && p.Lat <self.NW.Lat {
 			return true
 		}
 	}
