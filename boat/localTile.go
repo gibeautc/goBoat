@@ -10,14 +10,18 @@ import (
 	"time"
 	"bytes"
 	"github.com/hydrogen18/stalecucumber"
-	"os"
 	"image"
-	"image/color"
 	"os/exec"
+	"image/color"
+	"os"
+	"database/sql"
+	"gocv.io/x/gocv"
 )
 
+
+
 /*
-Tiles are square and at 1000 in, they have 83.333 ft sides
+Tiles are square and at 1280 in, they have ~106 ft sides
 byte in each little square indicates the liklyhood of it being blocked or impassible.
 255-> def cant go there
 0-> we have been there so we know its clear
@@ -55,9 +59,34 @@ const (
 
 type TileSet struct{
 	activeTiles []Tile
+	blobDetector *gocv.SimpleBlobDetector
+	conn *sql.DB
 
 }
 
+func (self *TileSet) Init(){
+	self.blobDetector=new(gocv.SimpleBlobDetector)
+	self.conn=ConnectToDB()
+
+}
+
+func (self *TileSet) GetPolygons(index int) []gocv.KeyPoint{
+	tile:=self.activeTiles[index]
+	dt:=make([]byte,0)
+	for x:=0;x<len(tile.Data);x++{
+		for y:=0;y<len(tile.Data[x]);y++{
+			dt=append(dt,tile.Data[x][y])
+		}
+
+	}
+	mat,err:=gocv.NewMatFromBytes(tileSize,tileSize,gocv.MatTypeCV8U,dt)
+	if err!=nil{
+		fmt.Println("Error Producing mat array")
+		fmt.Println(err.Error())
+		return nil
+	}
+	return self.blobDetector.Detect(mat)
+}
 
 func GetDiskSpaceOfPath(path string) float32{
 	out, err := exec.Command("du","-hs", path).Output()

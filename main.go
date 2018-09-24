@@ -24,6 +24,7 @@ func main() {
 	app.conn = boat.ConnectToDB()
 	app.osmMap = new(boat.MapData)
 	app.localMap = new(boat.TileSet)
+	app.localMap.Init()
 	app.allPoly = new(boat.PolySet)
 	st := time.Now()
 	err = app.osmMap.Load("largeMap.osm")
@@ -72,6 +73,11 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
+
+
+	//keyPoints:= app.localMap.GetPolygons(app.localIndex)
+	//fmt.Println(keyPoints)
+	//return
 	app.route, err = boat.ShortestPath(*app.curLocation, *app.destination, *app.allPoly)
 	if err != nil {
 		fmt.Println("Routing Error!")
