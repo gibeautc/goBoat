@@ -26,7 +26,7 @@ func main() {
 	app.localMap = new(boat.TileSet)
 	app.allPoly = new(boat.PolySet)
 	st := time.Now()
-	err = app.osmMap.Load("map.osm")
+	err = app.osmMap.Load("largeMap.osm")
 	if err != nil {
 		fmt.Println("Failed to load map")
 		fmt.Println(err.Error())
@@ -44,24 +44,25 @@ func main() {
 				for y := 0; y < len(app.osmMap.Data.Nodes); y++ {
 					if nid == app.osmMap.Data.Nodes[y].ID {
 						n := app.osmMap.Data.Nodes[y]
-						p.AddCorner(n.Lat, n.Lng)
+						p.AddCorner(n.Lng, n.Lat)
 						break
 					}
 				}
 
 			}
-			app.allPoly.AddPoly(*p)
-		}
+			if p.Verify() {
+				app.allPoly.AddPoly(*p)
+			}
 
-		app.allPoly.Verify()
+		}
 	}
 	app.curLocation = new(boat.Point)
-	app.curLocation.X = 44.591303
-	app.curLocation.Y = -123.058342
+	app.curLocation.Lat = 44.67618
+	app.curLocation.Lon = -123.09918
 
 	app.destination = new(boat.Point)
-	app.destination.X = 44.591327
-	app.destination.Y = -123.065849
+	app.destination.Lat = 44.6378
+	app.destination.Lon = -123.1445
 	st = time.Now()
 	app.localIndex, err = app.localMap.LoadTileForPoint(*app.curLocation)
 	fmt.Println("Load Time: ", time.Since(st))

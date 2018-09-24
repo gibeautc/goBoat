@@ -19,6 +19,38 @@ type Route struct {
 	end      Point
 }
 
+func (self *Route) MinMaxX() (float64, float64) {
+	var minX float64
+	var maxX float64
+	minX = 400.0
+	maxX = -400.0
+	for x := 0; x < self.Count; x++ {
+		if self.Points[x].Lon > maxX {
+			maxX = self.Points[x].Lon
+		}
+		if self.Points[x].Lon < minX {
+			minX = self.Points[x].Lon
+		}
+	}
+	return minX, maxX
+}
+
+func (self *Route) MinMaxY() (float64, float64) {
+	var minY float64
+	var maxY float64
+	minY = 400.0
+	maxY = -400.0
+	for x := 0; x < self.Count; x++ {
+		if self.Points[x].Lat > maxY {
+			maxY = self.Points[x].Lat
+		}
+		if self.Points[x].Lat < minY {
+			minY = self.Points[x].Lat
+		}
+	}
+	return minY, maxY
+}
+
 func (self *Route) Print() {
 	fmt.Println("--Route--")
 	fmt.Println("Start:")
@@ -146,8 +178,11 @@ func (self *PolySet) MinMaxY() (float64, float64) {
 }
 
 func Draw(pS *PolySet, rT *Route, start Point, end Point) {
-	minX, maxX := pS.MinMaxX()
-	minY, maxY := pS.MinMaxY()
+	//for this view, min and max should be for the route, not the polySet
+	//minX, maxX := pS.MinMaxX()
+	//minY, maxY := pS.MinMaxY()
+	minX, maxX := rT.MinMaxX()
+	minY, maxY := rT.MinMaxY()
 	imgSize := 2000
 	r := image.Rect(0, 0, imgSize+int(float64(imgSize)*.25), imgSize+int(float64(imgSize)*.25))
 	var sP, eP Point
@@ -323,7 +358,7 @@ line route from start to end
 func pointDis(allPolys PolySet, from Point, to Point) float64 {
 	if lineInPolygonSet(from.Lon, from.Lat, to.Lon, to.Lat, allPolys) {
 		//return calcDist(from.Lon, from.Lat, to.Lon, to.Lat)
-		dist,_:=DistanceBetween(from.Lon,from.Lat,to.Lon,to.Lat)
+		dist, _ := DistanceBetween(from.Lon, from.Lat, to.Lon, to.Lat)
 		return float64(dist)
 	}
 	return math.MaxFloat64
@@ -373,8 +408,8 @@ func ShortestPath(start Point, end Point, allPolys PolySet) (Route, error) {
 	pointList[0].totalDistance = 0.0
 
 	for i := 0; i < len(pointList); i++ {
-		fmt.Println(float64(i)/float64(len(pointList)))
-		if pointList[i].totalDistance==math.MaxFloat64{
+		fmt.Println(float64(i) / float64(len(pointList)))
+		if pointList[i].totalDistance == math.MaxFloat64 {
 			continue
 		}
 		for j := 0; j < len(pointList); j++ {
