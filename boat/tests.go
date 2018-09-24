@@ -43,12 +43,14 @@ func SquareTest() bool {
 	poly.AddCorner(50, 50)
 	poly.AddCorner(100, 100)
 	poly.AddCorner(100, 0)
+	poly.AddCorner(0, 0)
 	polySet.AddPoly(poly)
 
 	poly2.AddCorner(20, 20)
 	poly2.AddCorner(20, 40)
 	poly2.AddCorner(40, 40)
 	poly2.AddCorner(40, 20)
+	poly2.AddCorner(20, 20)
 	polySet.AddPoly(poly2)
 
 	polySet.Print()
@@ -59,7 +61,9 @@ func SquareTest() bool {
 	start.Y = 30
 	end.X = 70
 	end.Y = x
-
+	if !polySet.Verify() {
+		fmt.Println("Polygon Set Failed Verification, should not proced with Shortest Path as it could give bad results")
+	}
 	r, err := ShortestPath(start, end, polySet)
 	r.Print()
 	Draw(&polySet, &r, start, end)
