@@ -12,7 +12,7 @@ Also there is an issue where an outline of a river may be closed at some point o
 that may be the end of where the bank was mapped. Assuming the river center is mapped, this could be discovered by a point where the polygon
 and the line of the river cross.
 This will also be the case when/if changing body's of water, from lake to river, or river to river. I think the way past this is to
-see where two polygons share two adjacent points, this would indicate it is a passable transition. 
+see where two polygons share two adjacent points, this would indicate it is a passable transition.
 
 
 Need to be able to convert tile information into a polygon. Guessing this is going to be some sort of cv algorithm to find
@@ -24,6 +24,6 @@ TileSet now has a DB connection. Need to write functions what will keep a table 
 table tiles
 id int
 onDisk bool
-diskCompression int
+size int    (shows compression level on disk)
 inRam int   (index in ram)
 lastUsed  timestamp

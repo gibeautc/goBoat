@@ -178,7 +178,7 @@ func (self *PolySet) MinMaxY() (float64, float64) {
 }
 
 func Draw(pS *PolySet, rT *Route, start Point, end Point) {
-	//for this view, min and max should be for the route, not the polySet
+	//for this view, min and max should be for the Route, not the polySet
 	//minX, maxX := pS.MinMaxX()
 	//minY, maxY := pS.MinMaxY()
 	minX, maxX := rT.MinMaxX()
@@ -208,23 +208,23 @@ func Draw(pS *PolySet, rT *Route, start Point, end Point) {
 	SaveImage(img, "world.jpg")
 	if rT != nil {
 		if rT.Count == 0 {
-			//direct route, only need to draw start to finish
+			//direct Route, only need to draw start to finish
 			drawRtLine(img, start, end, minX, maxX, minY, maxY, imgSize, true)
-			SaveImage(img, "route.jpg")
+			SaveImage(img, "Route.jpg")
 			return
 		}
 		//we have more nodes
 		drawRtLine(img, start, rT.Points[0], minX, maxX, minY, maxY, imgSize, true)
 		imageCount := 0
-		SaveImage(img, "route"+strconv.Itoa(imageCount)+".jpg")
+		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".jpg")
 		imageCount++
 		for x := 0; x < rT.Count-1; x++ {
 			drawRtLine(img, rT.Points[x], rT.Points[x+1], minX, maxX, minY, maxY, imgSize, true)
-			SaveImage(img, "route"+strconv.Itoa(imageCount)+".jpg")
+			SaveImage(img, "Route"+strconv.Itoa(imageCount)+".jpg")
 			imageCount++
 		}
 		drawRtLine(img, rT.Points[rT.Count-1], end, minX, maxX, minY, maxY, imgSize, true)
-		SaveImage(img, "route"+strconv.Itoa(imageCount)+".jpg")
+		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".jpg")
 	}
 
 }
@@ -350,9 +350,9 @@ func lineInPolygonSet(testSX float64, testSY float64, testEX float64, testEY flo
 }
 
 /*
-returns the list of internal nodes of the route. So excluding start and end points
+returns the list of internal nodes of the Route. So excluding start and end points
 Route also contains the number of nodes. If the count is zero, and no errors, then we have a straight
-line route from start to end
+line Route from start to end
 */
 
 func pointDis(allPolys PolySet, from Point, to Point) float64 {
@@ -426,7 +426,89 @@ func ShortestPath(start Point, end Point, allPolys PolySet) (Route, error) {
 		}
 	}
 
-	//to get the route, have to work from end to
+	//to get the Route, have to work from end to
+	backwardsRoute := make([]Point, 0)
+	index := len(pointList) - 1
+	for true {
+		index = pointList[index].prev
+		if index == 0 {
+			break
+		}
+		backwardsRoute = append(backwardsRoute, pointList[index])
+
+	}
+
+	for index := len(backwardsRoute) - 1; index >= 0; index-- {
+		route.Points = append(route.Points, backwardsRoute[index])
+	}
+	route.Count = len(route.Points)
+	route.Distance = pointList[len(pointList)-1].totalDistance
+	fmt.Println("Time to Calculate Route: ", time.Since(t))
+	return route, nil
+}
+
+//going to implement diksters.... and actualy swap points in pointList
+func ShortestPath2(start Point, end Point, allPolys PolySet) (Route, error) {
+	t := time.Now()
+	var route Route
+	pointList := make([]Point, 0)
+	route.start = start
+	route.end = end
+	sX := start.Lon
+	sY := start.Lat
+	eX := end.Lon
+	eY := end.Lat
+
+	//check to make sure start and end points are inside polys
+	//not sure if this is really needed as our starting location will be our current location, and we know we get to where we are.
+	if !pointInPolygonSet(sX, sY, allPolys) {
+		return route, errors.New("start point not inside polys")
+	}
+
+	//todo may need this to be more of a warning as scan data may "appear" to put this point in an unreachable place
+	if !pointInPolygonSet(eX, eY, allPolys) {
+		return route, errors.New("end point not inside polys")
+	}
+
+	//check if straight line solution works
+	if lineInPolygonSet(sX, sY, eX, eY, allPolys) {
+		route.Count = 0
+		fmt.Print("StaightLine Route Works")
+		return route, nil
+	}
+
+	pointList = append(pointList, start)
+	for polyI := 0; polyI < allPolys.count; polyI++ {
+		for i := 0; i < allPolys.poly[polyI].corners; i++ {
+			var tempP Point
+			tempP.Lon = allPolys.poly[polyI].lonLst[i]
+			tempP.Lat = allPolys.poly[polyI].latLst[i]
+			tempP.totalDistance = math.MaxFloat64
+			pointList = append(pointList, tempP)
+		}
+	}
+	end.totalDistance = math.MaxFloat64
+	pointList = append(pointList, end)
+	pointList[0].totalDistance = 0.0
+
+	tc:=0
+	bestJ:=0
+	bestDist:=math.MaxFloat64
+	for bestJ!=len(pointList)-1{
+		for j := tc+1; j < len(pointList); j++ {
+			dist := pointDis(allPolys, pointList[tc], pointList[j]) + pointList[tc].totalDistance
+
+			if dist < pointList[j].totalDistance {
+				pointList[j].totalDistance = dist
+				pointList[j].prev = tc
+				bestJ=j
+				bestDist=dist
+			}
+		}
+
+	}
+	_=bestDist
+	//to get the Route, have to work from end to
 	backwardsRoute := make([]Point, 0)
 	index := len(pointList) - 1
 	for true {

@@ -1,94 +1,60 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/gibeautc/goBoat/boat"
-	"time"
 )
 
-type App struct {
-	conn        *sql.DB
-	osmMap      *boat.MapData
-	localMap    *boat.TileSet
-	curLocation *boat.Point
-	localIndex  int
-	destination *boat.Point
-	route       boat.Route
-	allPoly     *boat.PolySet
-}
+
 
 func main() {
-	var err error
-	app := new(App)
-	app.conn = boat.ConnectToDB()
-	app.osmMap = new(boat.MapData)
-	app.localMap = new(boat.TileSet)
-	app.localMap.Init()
-	app.allPoly = new(boat.PolySet)
-	st := time.Now()
-	err = app.osmMap.Load("largeMap.osm")
-	if err != nil {
-		fmt.Println("Failed to load map")
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println("Load Time: ", time.Since(st))
-		fmt.Println("Number of Nodes: ", len(app.osmMap.Data.Nodes))
-		fmt.Println("Number of Ways: ", len(app.osmMap.Data.Ways))
-		fmt.Println("Number of Relations: ", len(app.osmMap.Data.Relations))
-		app.osmMap.ParseForWater()
+	app := new(boat.App)
+	app.Events=make(chan boat.Msg,100)
+	app.Idle=true
+	app.Conn = boat.ConnectToDB("main.db")
+	app.OsmMap = new(boat.MapData)
+	app.LocalMap = new(boat.TileSet)
+	app.LocalMap.Init()
+	app.AllPolly = new(boat.PolySet)
+	app.Sensing=boat.NewSensingUnit(app)
+	app.Sensing.Run()
+	app.HaveRoute=false
 
-		for i := 0; i < len(app.osmMap.Data.Ways); i++ {
-			p := new(boat.Poly)
-			for x := 0; x < len(app.osmMap.Data.Ways[i].Nds); x++ {
-				nid := app.osmMap.Data.Ways[i].Nds[x].ID
-				for y := 0; y < len(app.osmMap.Data.Nodes); y++ {
-					if nid == app.osmMap.Data.Nodes[y].ID {
-						n := app.osmMap.Data.Nodes[y]
-						p.AddCorner(n.Lng, n.Lat)
-						break
-					}
-				}
 
+	app.CurLocation = new(boat.Point)
+	app.CurLocation.Lat = 44.67618
+	app.CurLocation.Lon = -123.09918
+
+	app.Destination = new(boat.Point)
+	app.Destination.Lat = 44.6378
+	app.Destination.Lon = -123.1445
+
+	//app.QueMsg(boat.LoadMapData{})
+	app.QueMsg(boat.LoadCurrentTile{})
+	//app.QueMsg(boat.FindRoute{})
+
+	app.AddTimer(10000,boat.DoOneTimeTask{},false)
+	app.AddTimer(20000,boat.SaveActiveToDisk{},true)
+
+	var event boat.Msg
+	for{
+		event= app.WaitForEvent()
+		switch event.(type){
+		case boat.TimeOut:
+			fmt.Println("Waiting for Event")
+		default:
+			if event.IsIdle() && !app.Idle{
+				fmt.Println("Not Idle, Event Ignored")
+				continue
+				//not sure if we want to queue these up somewhere else or just plan to ignore them all together
 			}
-			if p.Verify() {
-				app.allPoly.AddPoly(*p)
-			}
-
+			event.Handle(app)
 		}
-	}
-	app.curLocation = new(boat.Point)
-	app.curLocation.Lat = 44.67618
-	app.curLocation.Lon = -123.09918
 
-	app.destination = new(boat.Point)
-	app.destination.Lat = 44.6378
-	app.destination.Lon = -123.1445
-	st = time.Now()
-	app.localIndex, err = app.localMap.LoadTileForPoint(*app.curLocation)
-	fmt.Println("Load Time: ", time.Since(st))
-	fmt.Println("We are currently in tile with index:", app.localIndex)
-	if err != nil {
-		fmt.Println("Failed to get current local tile....exiting")
-		fmt.Println(err.Error())
-		return
+
 	}
 
 
-	//keyPoints:= app.localMap.GetPolygons(app.localIndex)
-	//fmt.Println(keyPoints)
-	//return
-	app.route, err = boat.ShortestPath(*app.curLocation, *app.destination, *app.allPoly)
-	if err != nil {
-		fmt.Println("Routing Error!")
-		fmt.Println(err.Error())
-		boat.DrawWorld(app.allPoly)
-	}
-	app.route.Print()
 
-	if err == nil {
-		boat.Draw(app.allPoly, &app.route, *app.curLocation, *app.destination)
-	}
-
-	fmt.Println("nothing else to do for now")
 }
+

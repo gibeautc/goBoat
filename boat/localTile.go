@@ -15,7 +15,7 @@ import (
 	"image/color"
 	"os"
 	"database/sql"
-	"gocv.io/x/gocv"
+
 )
 
 
@@ -49,6 +49,8 @@ if we have Tile Data adjsant to that Tile, the Tile Id will be listed in the str
 
 
 const (
+
+
 	tileSize=1280  //has to be even multiples of 2
  	activeTileLimit=5  //probably can be higher, but for testing we will keep it low
 	maxCompression=10
@@ -59,34 +61,19 @@ const (
 
 type TileSet struct{
 	activeTiles []Tile
-	blobDetector *gocv.SimpleBlobDetector
 	conn *sql.DB
 
 }
 
 func (self *TileSet) Init(){
-	self.blobDetector=new(gocv.SimpleBlobDetector)
-	self.conn=ConnectToDB()
-
-}
-
-func (self *TileSet) GetPolygons(index int) []gocv.KeyPoint{
-	tile:=self.activeTiles[index]
-	dt:=make([]byte,0)
-	for x:=0;x<len(tile.Data);x++{
-		for y:=0;y<len(tile.Data[x]);y++{
-			dt=append(dt,tile.Data[x][y])
-		}
-
-	}
-	mat,err:=gocv.NewMatFromBytes(tileSize,tileSize,gocv.MatTypeCV8U,dt)
+	self.conn=ConnectToDB("tileSet.db")
+	err:=self.dbInit()
 	if err!=nil{
-		fmt.Println("Error Producing mat array")
 		fmt.Println(err.Error())
-		return nil
 	}
-	return self.blobDetector.Detect(mat)
+	self.updateTilesFromDiskToDB()
 }
+
 
 func GetDiskSpaceOfPath(path string) float32{
 	out, err := exec.Command("du","-hs", path).Output()
@@ -100,7 +87,7 @@ func GetDiskSpaceOfPath(path string) float32{
 	var pref float32
 	var valueString string
 	wholeString:=elems[0]
-	wholeString=strings.Replace(wholeString," ","",0)
+	wholeString=strings.Replace(wholeString," ","",-1)
 	if strings.HasSuffix(wholeString,"B"){
 		pref=1/(1000*1000)
 		valueString=strings.Replace(elems[0],"B","",1)
@@ -126,6 +113,14 @@ func GetDiskSpaceOfPath(path string) float32{
 	return float32(value)*pref
 }
 
+func (self *TileSet) SaveAllActiveToDisk(){
+	fmt.Println("Saving All Active Files to Disk")
+	//todo make a copy of all tiles, and then save those to disk. this way it can be done in a go routine
+	for x:=0;x<len(self.activeTiles);x++{
+		self.activeTiles[x].Pickle()
+	}
+}
+
 func (self * TileSet) CheckMemoryAndCompress() {
 	/*
 	Check the amount of spaced used by /tiles    and maybe /tileImages even thought that probably wont exist out in the wild
@@ -134,7 +129,9 @@ func (self * TileSet) CheckMemoryAndCompress() {
 
 	 //du -hs tiles/
 	used:=GetDiskSpaceOfPath("tiles/")
-	fmt.Println(used)
+	if used>maxDiskSpace{
+		fmt.Println("Need to compress tiles!!!!")
+	}
 
 }
 
@@ -169,7 +166,11 @@ func (self *TileSet) LoadTileForPoint(p Point) (int,error){
 
 	Since this action could re-order activeTiles, any previously requested indexes are no longer valid
 
+
+
 	 */
+
+	 //todo does not seem to be working!
 	for x:=0;x<len(self.activeTiles);x++{
 		if self.activeTiles[x].isPointInTile(p){
 			return x,nil
@@ -199,7 +200,8 @@ func (self *TileSet) LoadTileForPoint(p Point) (int,error){
 		}
 	}
 	//if we get to here, we dont have it on disk, or in memory, so use new tile, but get new ID for it
-	t.Id,err=self.GetNewID()
+	t.Id,err=self.getNewTileID()
+	
 	if err!=nil{
 		return 0,err
 	}

@@ -1,6 +1,12 @@
 package boat
 
-import "math"
+import (
+	"math"
+	"os"
+	"database/sql"
+	"time"
+	"fmt"
+)
 
 
 /*
@@ -109,4 +115,89 @@ func sliceContainsUint32(lst []uint32,obj uint32) bool{
 		}
 	}
 	return false
+}
+
+
+func Exists(name string) bool {
+	_, err := os.Stat(name)
+	return !os.IsNotExist(err)
+}
+
+type App struct {
+	Conn        *sql.DB
+	OsmMap      *MapData
+	LocalMap    *TileSet
+	CurLocation *Point
+	LocalIndex  int
+	Destination *Point
+	Route       Route
+	AllPolly    *PolySet
+	Events      chan Msg
+	Idle        bool
+	Sensing 	*SensingUnit
+	HaveRoute	bool	//set to true when we are in the process of finding a route
+}
+
+
+func (app *App) QueMsg(msg Msg){
+	app.Events<-msg
+}
+
+func (app *App) WaitForEvent() Msg{
+	if len(app.Events)==0{
+		//only start the timer if we dont already have something to process
+		app.AddTimer(1000,TimeOut{},false)
+	}
+	for{
+		ev:=<-app.Events
+		if !app.Idle && ev.IsIdle(){
+			//we want to delay the event
+			fmt.Println("Delaying Event: ",ev)
+			app.AddTimer(500,ev,false)
+			continue
+		}
+		return ev
+	}
+
+}
+
+func(app *App) AddTimer(interval int,msg Msg,repeating bool){
+	if repeating{
+		go app.repeatingTimer(msg,interval)
+	}else{
+		go app.nonRepeatingTimer(msg,interval)
+	}
+}
+
+func (app *App) repeatingTimer(msg Msg,interval int){
+	for{
+		time.Sleep(time.Duration(interval) *time.Millisecond)
+		app.Events<-msg
+	}
+}
+
+func (app *App) nonRepeatingTimer(msg Msg,interval int){
+	time.Sleep(time.Duration(interval) *time.Millisecond)
+	app.Events<-msg
+}
+
+
+func (app *App) DoRoute(){
+	//careful! we are in a go routine!
+
+	var err error
+	app.Route, err = ShortestPath(*app.CurLocation, *app.Destination, *app.AllPolly)
+	if err != nil {
+		app.HaveRoute=false
+		fmt.Println("Routing Error!")
+		fmt.Println(err.Error())
+		DrawWorld(app.AllPolly)
+	}else{
+		app.HaveRoute=true
+	}
+	app.Route.Print()
+
+	if err == nil {
+		Draw(app.AllPolly, &app.Route, *app.CurLocation, *app.Destination)
+	}
 }
