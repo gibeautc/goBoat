@@ -2,20 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cc30138e-7e03-427c-8aa5-e300713b749e" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/vehical/vehical_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/Notes" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/Notes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/database.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/database.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/draw.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/draw.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/localTile.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/localTile.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/messages.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/osm.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/osm.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/route.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/sensingThread.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/sensingThread.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/tests.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/boat/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/tileSet.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/tileSet.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tileSet.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tiles/1" beforeDir="false" afterPath="$PROJECT_DIR$/tiles/1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vehical/database.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/database.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vehical/localTile.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/localTile.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vehical/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/messages.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vehical/vehical_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/vehical/vehical_test.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -65,8 +58,8 @@
       <file leaf-file-name="main.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="174">
-              <caret line="23" selection-start-line="23" selection-end-line="23" />
+            <state relative-caret-position="737">
+              <caret line="55" selection-start-line="55" selection-end-line="55" />
               <folding>
                 <element signature="e#14#90#0" expanded="true" />
               </folding>
@@ -74,11 +67,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vehical_test.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="vehical_test.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vehical/vehical_test.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="635">
-              <caret line="158" column="17" selection-start-line="158" selection-start-column="17" selection-end-line="158" selection-end-column="17" />
+            <state relative-caret-position="689">
+              <caret line="220" column="18" selection-start-line="220" selection-start-column="18" selection-end-line="220" selection-end-column="18" />
               <folding>
                 <element signature="e#17#76#0" expanded="true" />
               </folding>
@@ -86,11 +79,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="localTile.go" pinned="false" current-in-tab="false">
+      <file leaf-file-name="localTile.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/vehical/localTile.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="248" column="32" selection-start-line="248" selection-start-column="32" selection-end-line="248" selection-end-column="32" />
+            <state relative-caret-position="569">
+              <caret line="88" column="89" selection-start-line="88" selection-start-column="89" selection-end-line="88" selection-end-column="89" />
               <folding>
                 <element signature="e#14#232#0" expanded="true" />
               </folding>
@@ -131,8 +124,8 @@
       <file leaf-file-name="database.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vehical/database.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="293">
-              <caret line="50" column="20" lean-forward="true" selection-start-line="50" selection-start-column="20" selection-end-line="50" selection-end-column="20" />
+            <state relative-caret-position="1185">
+              <caret line="140" column="21" selection-start-line="140" selection-start-column="21" selection-end-line="140" selection-end-column="21" />
               <folding>
                 <element signature="e#14#80#0" expanded="true" />
               </folding>
@@ -144,7 +137,7 @@
         <entry file="file://$PROJECT_DIR$/vehical/utils.go">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="180">
-              <caret line="10" column="9" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
+              <caret line="10" column="6" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
               <folding>
                 <element signature="e#14#38#0" expanded="true" />
               </folding>
@@ -155,8 +148,8 @@
       <file leaf-file-name="messages.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vehical/messages.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="17" column="41" selection-start-line="17" selection-start-column="41" selection-end-line="17" selection-end-column="41" />
+            <state relative-caret-position="779">
+              <caret line="114" column="29" selection-start-line="114" selection-start-column="29" selection-end-line="114" selection-end-column="29" />
               <folding>
                 <element signature="e#14#39#0" expanded="true" />
               </folding>
@@ -194,11 +187,11 @@
       <find>expand</find>
       <find>expands</find>
       <find>compress</find>
-      <find>localMap</find>
       <find>expanding from</find>
-      <find>:</find>
       <find>gibeautc</find>
+      <find>:</find>
       <find>compres</find>
+      <find>localMap</find>
     </findStrings>
     <replaceStrings>
       <replace>e</replace>
@@ -228,12 +221,13 @@
         <option value="$PROJECT_DIR$/boat/localTile.go" />
         <option value="$PROJECT_DIR$/boat/tests.go" />
         <option value="$PROJECT_DIR$/boat/database.go" />
-        <option value="$PROJECT_DIR$/main.go" />
         <option value="$PROJECT_DIR$/vehical/tests.go" />
         <option value="$PROJECT_DIR$/vehical/Notes" />
-        <option value="$PROJECT_DIR$/vehical/vehical_test.go" />
-        <option value="$PROJECT_DIR$/vehical/database.go" />
         <option value="$PROJECT_DIR$/vehical/utils.go" />
+        <option value="$PROJECT_DIR$/vehical/messages.go" />
+        <option value="$PROJECT_DIR$/main.go" />
+        <option value="$PROJECT_DIR$/vehical/database.go" />
+        <option value="$PROJECT_DIR$/vehical/vehical_test.go" />
         <option value="$PROJECT_DIR$/vehical/localTile.go" />
       </list>
     </option>
@@ -307,7 +301,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Go Test.TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)">
+  <component name="RunManager" selected="Go Test.TestTileSet_CheckMemoryAndCompress in github.com/gibeautc/goBoat/vehical">
     <configuration name="Run" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="goBoat" />
       <working_directory value="$PROJECT_DIR$/" />
@@ -316,28 +310,6 @@
       <filePath value="$PROJECT_DIR$/" />
       <package value="github.com/gibeautc/goBoat" />
       <directory value="$PROJECT_DIR$/" />
-    </configuration>
-    <configuration name="TestFindRoute_Handle in github.com/gibeautc/goBoat/vehical" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="goBoat" />
-      <working_directory value="$PROJECT_DIR$/" />
-      <go_parameters value="-i" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="github.com/gibeautc/goBoat/vehical" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestFindRoute_Handle$" />
-    </configuration>
-    <configuration name="TestGetCords in github.com/gibeautc/goBoat/vehical" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="goBoat" />
-      <working_directory value="$PROJECT_DIR$/" />
-      <go_parameters value="-i" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="github.com/gibeautc/goBoat/vehical" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestGetCords$" />
     </configuration>
     <configuration name="TestGetCords2 in github.com/gibeautc/goBoat/vehical" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="goBoat" />
@@ -349,6 +321,17 @@
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
       <pattern value="^TestGetCords2$" />
+    </configuration>
+    <configuration name="TestTileSet_CheckMemoryAndCompress in github.com/gibeautc/goBoat/vehical" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="goBoat" />
+      <working_directory value="$PROJECT_DIR$/vehical" />
+      <go_parameters value="-i" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/gibeautc/goBoat/vehical" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestTileSet_CheckMemoryAndCompress$" />
     </configuration>
     <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="goBoat" />
@@ -383,6 +366,17 @@
       <filePath value="$PROJECT_DIR$/" />
       <pattern value="^TestTileSet_DumpDbAndCreateGenisisBlock$" />
     </configuration>
+    <configuration name="TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="goBoat" />
+      <working_directory value="$PROJECT_DIR$/vehical" />
+      <go_parameters value="-i" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/gibeautc/goBoat/vehical" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestTileSet_GetOldestToCompress$" />
+    </configuration>
     <configuration name="Vehical Test" type="GoTestRunConfiguration" factoryName="Go Test">
       <module name="goBoat" />
       <working_directory value="$PROJECT_DIR$/" />
@@ -396,52 +390,52 @@
     <list>
       <item itemvalue="Go Build.Run" />
       <item itemvalue="Go Test.Vehical Test" />
-      <item itemvalue="Go Test.TestGetCords in github.com/gibeautc/goBoat/vehical" />
-      <item itemvalue="Go Test.TestFindRoute_Handle in github.com/gibeautc/goBoat/vehical" />
       <item itemvalue="Go Test.TestGetCords2 in github.com/gibeautc/goBoat/vehical" />
       <item itemvalue="Go Test.TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical" />
       <item itemvalue="Go Test.TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" />
+      <item itemvalue="Go Test.TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" />
+      <item itemvalue="Go Test.TestTileSet_CheckMemoryAndCompress in github.com/gibeautc/goBoat/vehical" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestTileSet_CheckMemoryAndCompress in github.com/gibeautc/goBoat/vehical" />
+        <item itemvalue="Go Test.TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" />
         <item itemvalue="Go Test.TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" />
         <item itemvalue="Go Test.TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical" />
         <item itemvalue="Go Test.TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical" />
-        <item itemvalue="Go Test.TestGetCords2 in github.com/gibeautc/goBoat/vehical" />
-        <item itemvalue="Go Test.TestGetCords in github.com/gibeautc/goBoat/vehical" />
       </list>
     </recent_temporary>
   </component>
   <component name="TestHistory">
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 14h 29m 19s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
-    </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 14h 29m 41s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
-    </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 14h 30m 25s.xml">
+    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 15h 09m 15s.xml">
       <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 14h 32m 03s.xml">
+    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 15h 10m 15s.xml">
       <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 14h 33m 33s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestTileSet_GetOldestToCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 15h 55m 44s.xml">
+      <configuration name="TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 14h 35m 56s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestTileSet_GetOldestToCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 15h 58m 11s.xml">
+      <configuration name="TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 14h 53m 48s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestTileSet_GetOldestToCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 15h 59m 27s.xml">
+      <configuration name="TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 14h 55m 59s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestTileSet_GetOldestToCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 16h 01m 05s.xml">
+      <configuration name="TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 15h 04m 42s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestTileSet_GetOldestToCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 16h 03m 00s.xml">
+      <configuration name="TestTileSet_GetOldestToCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestTileSet_DumpDbAndCreateGenisisBlock_in_github_com_gibeautc_goBoat_vehical_(1) - 2018.09.27 at 15h 06m 52s.xml">
-      <configuration name="TestTileSet_DumpDbAndCreateGenisisBlock in github.com/gibeautc/goBoat/vehical (1)" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestTileSet_CheckMemoryAndCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 16h 12m 10s.xml">
+      <configuration name="TestTileSet_CheckMemoryAndCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestTileSet_CheckMemoryAndCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 16h 15m 20s.xml">
+      <configuration name="TestTileSet_CheckMemoryAndCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestTileSet_CheckMemoryAndCompress_in_github_com_gibeautc_goBoat_vehical - 2018.09.27 at 16h 18m 45s.xml">
+      <configuration name="TestTileSet_CheckMemoryAndCompress in github.com/gibeautc/goBoat/vehical" configurationId="GoTestRunConfiguration" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
@@ -458,7 +452,7 @@
       <window_info anchor="bottom" id="Version Control" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.57995224" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.57836115" />
       <window_info id="Favorites" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -494,15 +488,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/vehical/database.go</url>
-          <line>40</line>
-          <properties />
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-      <option name="time" value="6" />
+      <option name="time" value="7" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -821,16 +807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vehical/messages.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" column="41" selection-start-line="17" selection-start-column="41" selection-end-line="17" selection-end-column="41" />
-          <folding>
-            <element signature="e#14#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vehical/tests.go">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -841,52 +817,62 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="23" selection-start-line="23" selection-end-line="23" />
-          <folding>
-            <element signature="e#14#90#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vehical/utils.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
-          <caret line="10" column="9" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
+          <caret line="10" column="6" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
           <folding>
             <element signature="e#14#38#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/vehical/messages.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="779">
+          <caret line="114" column="29" selection-start-line="114" selection-start-column="29" selection-end-line="114" selection-end-column="29" />
+          <folding>
+            <element signature="e#14#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/vehical/database.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="50" column="20" lean-forward="true" selection-start-line="50" selection-start-column="20" selection-end-line="50" selection-end-column="20" />
+        <state relative-caret-position="1185">
+          <caret line="140" column="21" selection-start-line="140" selection-start-column="21" selection-end-line="140" selection-end-column="21" />
           <folding>
             <element signature="e#14#80#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vehical/localTile.go">
+    <entry file="file://$PROJECT_DIR$/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="248" column="32" selection-start-line="248" selection-start-column="32" selection-end-line="248" selection-end-column="32" />
+        <state relative-caret-position="737">
+          <caret line="55" selection-start-line="55" selection-end-line="55" />
           <folding>
-            <element signature="e#14#232#0" expanded="true" />
+            <element signature="e#14#90#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vehical/vehical_test.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="635">
-          <caret line="158" column="17" selection-start-line="158" selection-start-column="17" selection-end-line="158" selection-end-column="17" />
+        <state relative-caret-position="689">
+          <caret line="220" column="18" selection-start-line="220" selection-start-column="18" selection-end-line="220" selection-end-column="18" />
           <folding>
             <element signature="e#17#76#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vehical/localTile.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="569">
+          <caret line="88" column="89" selection-start-line="88" selection-start-column="89" selection-end-line="88" selection-end-column="89" />
+          <folding>
+            <element signature="e#14#232#0" expanded="true" />
           </folding>
         </state>
       </provider>

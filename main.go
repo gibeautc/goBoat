@@ -20,18 +20,6 @@ func main() {
 	app.Sensing.Run()
 	app.HaveRoute=false
 
-
-	for x:=0;x<1000000;x++{
-		if x%100==0{
-			fmt.Println(x)
-		}
-		app.LocalMap.GetNewTileID()
-	}
-
-
-
-	return
-
 	app.CurLocation = new(vehical.Point)
 	app.CurLocation.Lat = 44.67618
 	app.CurLocation.Lon = -123.09918
@@ -46,7 +34,7 @@ func main() {
 
 	app.AddTimer(10000, vehical.DoOneTimeTask{},false)
 	app.AddTimer(20000, vehical.SaveActiveToDisk{},true)
-
+	app.AddTimer(60000,vehical.CheckMemoryCompress{},true)
 	var event vehical.Msg
 	for{
 		event= app.WaitForEvent()

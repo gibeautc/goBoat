@@ -98,11 +98,14 @@ func(self *TileSet) updateTilesFromDiskToDB() error{
 
 
 
-func(self *TileSet) DumpDbAndCreateGenisisBlock() error{
+func(self *TileSet) DumpDbAndCreateGenisisBlock(createGenisis bool) error{
 	var err error
 	self.conn.Exec("DROP TABLE tiles")
 	self.dbInit()
 	self.conn.Exec("VACUUM")
+	if !createGenisis{
+		return nil
+	}
 	t:=NewTile()
 	t.Id,err=self.GetNewTileID()
 	if err!=nil{
@@ -134,5 +137,28 @@ func(self *TileSet) DumpDbAndCreateGenisisBlock() error{
 	return self.updateTileToDB(*t,-1)
 }
 
+
+func (self *TileSet) GetOldestToCompress() (int,error){
+	//get the tile ID used the longest ago that can be compressed, ie size>1
+	rows,err:=self.conn.Query("SELECT id,lastUsed from tiles where onDisk=1 and comp>1 ")
+	if err!=nil{
+		return 0,err
+	}
+	oldest:=time.Now().Unix()+100
+	var bestId int
+	id:=0
+	var lastUsed int64
+	for rows.Next(){
+		err=rows.Scan(&id,&lastUsed)
+		if err!=nil{
+			return 0,err
+		}
+		if lastUsed<oldest{
+			bestId=id
+			oldest=lastUsed
+		}
+	}
+	return bestId,nil
+}
 
 

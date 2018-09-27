@@ -156,9 +156,68 @@ func TestFindRoute_Handle(t *testing.T) {
 func TestTileSet_DumpDbAndCreateGenisisBlock(t *testing.T) {
 	ts:=new(TileSet)
 	ts.Init()
-	err:=ts.DumpDbAndCreateGenisisBlock()
+	err:=ts.DumpDbAndCreateGenisisBlock(true)
 	if err!=nil{
 		fmt.Println(err.Error())
 		t.Fail()
+	}
+}
+
+
+func TestTileSet_GetOldestToCompress(t *testing.T) {
+	/*
+	not actually creating files for these, so size in DB is bogus
+	 */
+	ts:=new(TileSet)
+	ts.Init()
+	err:=ts.DumpDbAndCreateGenisisBlock(false)
+	if err!=nil{
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	for x:=0;x<10;x++{
+		tl:=NewTile()
+		tl.Id,err=ts.GetNewTileID()
+		if err!=nil{
+			fmt.Println(err.Error())
+			t.Fail()
+		}
+		ts.updateTileToDB(*tl,0)
+	}
+	_,err=ts.conn.Exec("UPDATE tiles set onDisk=1")//fake them on disk
+	_,err=ts.conn.Exec("UPDATE tiles set comp=1 where id=1")
+	if err!=nil{
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	id,err:=ts.GetOldestToCompress()
+	if err!=nil{
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	//since we changed the size of id=1 to be 1 (fully compressed) the next oldest should be id=2
+	assert.Equal(t,2,id,"Oldest Should be id 2")
+}
+
+
+func TestTileSet_CheckMemoryAndCompress(t *testing.T) {
+	ts:=new(TileSet)
+	ts.Init()
+	err:=ts.DumpDbAndCreateGenisisBlock(false)
+	if err!=nil{
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	for x:=0;x<10;x++{
+		tl:=NewTile()
+		tl.Id,err=ts.GetNewTileID()
+		if err!=nil{
+			fmt.Println(err.Error())
+			t.Fail()
+		}
+		tl.Pickle()
+		fmt.Println("Adding Tile: ",x)
+		ts.updateTileToDB(*tl,0)
+		ts.CheckMemoryAndCompress()
 	}
 }

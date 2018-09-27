@@ -105,3 +105,12 @@ func (self SensorData) Handle(app *App){
 	fmt.Println("Got Sensor Data....what to do with it?")
 	fmt.Println("Number of points: ",len(self.angles))
 }
+
+
+
+type CheckMemoryCompress struct{}
+func (self CheckMemoryCompress) IsIdle() bool {return true}
+func (self CheckMemoryCompress) Handle(app *App){
+	fmt.Println("Launching routine to check memory and compress if needed")
+	go app.LocalMap.CheckMemoryAndCompress()
+}

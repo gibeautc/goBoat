@@ -36,7 +36,7 @@ const (
 	tileSize=4096  //has to be even multiples of 2
  	activeTileLimit=5  //probably can be higher, but for testing we will keep it low
 	maxCompression=1
-	maxDiskSpace= 20 //in MB
+	maxDiskSpace= 200 //in MB
 )
 
 
@@ -69,6 +69,8 @@ func GetDiskSpaceOfPath(path string) float32{
 	var pref float32
 	var valueString string
 	wholeString:=elems[0]
+	fmt.Println("ValueString: ",wholeString)
+	fmt.Println("Length: ",len(wholeString))
 	wholeString=strings.Replace(wholeString," ","",-1)
 	if strings.HasSuffix(wholeString,"B"){
 		pref=1/(1000*1000)
@@ -83,8 +85,8 @@ func GetDiskSpaceOfPath(path string) float32{
 		pref=1000
 		valueString=strings.Replace(elems[0],"G","",1)
 	}else{
-		fmt.Println("no suffix found....")
-		return 0.0
+		fmt.Println("no suffix found....",)
+		return -100//shouldnt happen once I actually write this function correctly.......
 	}
 	fmt.Println(valueString)
 	value,err:=strconv.ParseFloat(valueString,32)
@@ -110,9 +112,29 @@ func (self * TileSet) CheckMemoryAndCompress() {
 	 */
 
 	 //du -hs tiles/
-	used:=GetDiskSpaceOfPath("tiles/")
+	used:=GetDiskSpaceOfPath(folder+"tiles/")
 	if used>maxDiskSpace{
 		fmt.Println("Need to compress tiles!!!!")
+		for used>maxDiskSpace{
+			id,err:=self.GetOldestToCompress()
+			if err!=nil{
+				fmt.Println(err.Error())
+				return
+			}
+			t:=NewTile()
+			t.Id=uint32(id)
+			t.UnPickle()
+			if !t.Compress(){
+				fmt.Println("Could not compress the tile we were given? That shouldnt happen")
+				return
+			}
+			t.Pickle()
+			self.conn.Exec("UPDATE tiles set comp=$1 where id=$2",len(t.Data),t.Id)
+			used=GetDiskSpaceOfPath(folder+"tiles/")
+
+		}
+	}else{
+		fmt.Println("No Need to Compress at this time")
 	}
 
 }
