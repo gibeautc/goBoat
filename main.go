@@ -2,45 +2,56 @@ package main
 
 import (
 	"fmt"
-	"github.com/gibeautc/goBoat/boat"
+	"github.com/gibeautc/goBoat/vehical"
 )
 
 
 
 func main() {
-	app := new(boat.App)
-	app.Events=make(chan boat.Msg,100)
+	app := new(vehical.App)
+	app.Events=make(chan vehical.Msg,100)
 	app.Idle=true
-	app.Conn = boat.ConnectToDB("main.db")
-	app.OsmMap = new(boat.MapData)
-	app.LocalMap = new(boat.TileSet)
+	app.Conn = vehical.ConnectToDB("database/main.db")
+	app.OsmMap = new(vehical.MapData)
+	app.LocalMap = new(vehical.TileSet)
 	app.LocalMap.Init()
-	app.AllPolly = new(boat.PolySet)
-	app.Sensing=boat.NewSensingUnit(app)
+	app.AllPolly = new(vehical.PolySet)
+	app.Sensing= vehical.NewSensingUnit(app)
 	app.Sensing.Run()
 	app.HaveRoute=false
 
 
-	app.CurLocation = new(boat.Point)
+	for x:=0;x<1000000;x++{
+		if x%100==0{
+			fmt.Println(x)
+		}
+		app.LocalMap.GetNewTileID()
+	}
+
+
+
+	return
+
+	app.CurLocation = new(vehical.Point)
 	app.CurLocation.Lat = 44.67618
 	app.CurLocation.Lon = -123.09918
 
-	app.Destination = new(boat.Point)
+	app.Destination = new(vehical.Point)
 	app.Destination.Lat = 44.6378
 	app.Destination.Lon = -123.1445
 
-	//app.QueMsg(boat.LoadMapData{})
-	app.QueMsg(boat.LoadCurrentTile{})
-	//app.QueMsg(boat.FindRoute{})
+	//app.QueMsg(vehical.LoadMapData{})
+	app.QueMsg(vehical.LoadCurrentTile{})
+	//app.QueMsg(vehical.FindRoute{})
 
-	app.AddTimer(10000,boat.DoOneTimeTask{},false)
-	app.AddTimer(20000,boat.SaveActiveToDisk{},true)
+	app.AddTimer(10000, vehical.DoOneTimeTask{},false)
+	app.AddTimer(20000, vehical.SaveActiveToDisk{},true)
 
-	var event boat.Msg
+	var event vehical.Msg
 	for{
 		event= app.WaitForEvent()
 		switch event.(type){
-		case boat.TimeOut:
+		case vehical.TimeOut:
 			fmt.Println("Waiting for Event")
 		default:
 			if event.IsIdle() && !app.Idle{
