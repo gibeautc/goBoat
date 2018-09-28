@@ -1,89 +1,87 @@
 package vehical
 
 import (
-	"testing"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"math"
+	"testing"
 	"time"
-	"fmt"
 )
 
 func TestGetCords2(t *testing.T) {
 	//finding cords for genisis block
-	lat,lon:=GetCords(44.616429,-123.072626,2048,180)
-	fmt.Println("Lat: ",lat)
-	fmt.Println("Lon: ",lon)
+	lat, lon := GetCords(44.616429, -123.072626, 2048, 180)
+	fmt.Println("Lat: ", lat)
+	fmt.Println("Lon: ", lon)
 	//that will be the southCenter cords
-	lat,lon=GetCords(44.6159617,-123.072626,2048,270)
-	fmt.Println("Lat: ",lat)
-	fmt.Println("Lon: ",lon)
+	lat, lon = GetCords(44.6159617, -123.072626, 2048, 270)
+	fmt.Println("Lat: ", lat)
+	fmt.Println("Lon: ", lon)
 	//this will be the SW Corner
 	//Lat:  44.61596169811975
 	//Lon:  -123.07328247537501
-	lat,lon=GetCords(44.61596169811975,-123.07328247537501,4096,90)
-	fmt.Println("Lat: ",lat)
-	fmt.Println("Lon: ",lon)
+	lat, lon = GetCords(44.61596169811975, -123.07328247537501, 4096, 90)
+	fmt.Println("Lat: ", lat)
+	fmt.Println("Lon: ", lon)
 	//this will be SE Corner
 	//Lat:  44.61596169059874
 	//Lon:  -123.07196952462509
-	lat,lon=GetCords(44.61596169059874,-123.07196952462509,4096,0)
-	fmt.Println("Lat: ",lat)
-	fmt.Println("Lon: ",lon)
+	lat, lon = GetCords(44.61596169059874, -123.07196952462509, 4096, 0)
+	fmt.Println("Lat: ", lat)
+	fmt.Println("Lon: ", lon)
 	//this will be NE Corner
 	//Lat:  44.61689628886895
 	//Lon:  -123.07196952462509
-	lat,lon=GetCords(44.61689628886895,-123.07196952462509,4096,270)
-	fmt.Println("Lat: ",lat)
-	fmt.Println("Lon: ",lon)
+	lat, lon = GetCords(44.61689628886895, -123.07196952462509, 4096, 270)
+	fmt.Println("Lat: ", lat)
+	fmt.Println("Lon: ", lon)
 	//this will be NW Corner
 	//Lat:  44.616896281347714
 	//Lon:  -123.07328249650676
-	lat,lon=GetCords(44.616896281347714,-123.07328249650676,4096,180)
-	fmt.Println("Lat: ",lat)
-	fmt.Println("Lon: ",lon)
+	lat, lon = GetCords(44.616896281347714, -123.07328249650676, 4096, 180)
+	fmt.Println("Lat: ", lat)
+	fmt.Println("Lon: ", lon)
 	//this should be SW corner again
 	//this is what we will check
-	assert.Equal(t,true,math.Abs(lat-44.61596169811975)<44.61596169811975*.0001)
-	assert.Equal(t,true,math.Abs(lon+123.07328247537501)<123.07328247537501*.0001)
+	assert.Equal(t, true, math.Abs(lat-44.61596169811975) < 44.61596169811975*.0001)
+	assert.Equal(t, true, math.Abs(lon+123.07328247537501) < 123.07328247537501*.0001)
 }
 
 func TestGetCords(t *testing.T) {
-	lat,lon:=GetCords(44.0,-123.0,538976,-35)
+	lat, lon := GetCords(44.0, -123.0, 538976, -35)
 	fmt.Println("Lat")
-	fmt.Println("Expected: ",44.1)
-	fmt.Println("Got: ",lat)
+	fmt.Println("Expected: ", 44.1)
+	fmt.Println("Got: ", lat)
 	fmt.Println("")
 	fmt.Println("Lon")
-	fmt.Println("Expected: ",-123.1)
-	fmt.Println("Got: ",lon)
+	fmt.Println("Expected: ", -123.1)
+	fmt.Println("Got: ", lon)
 
-
-	assert.Equal(t,true,math.Abs(lat-44.1)<44.1*.0001)
-	assert.Equal(t,true,math.Abs(lon+123.1)<123.1*.0001)
+	assert.Equal(t, true, math.Abs(lat-44.1) < 44.1*.0001)
+	assert.Equal(t, true, math.Abs(lon+123.1) < 123.1*.0001)
 }
 
 func TestDistanceBetween(t *testing.T) {
-	dist,direction:=DistanceBetween(44.0,-123.0,44.1,-123.1)
+	dist, direction := DistanceBetween(44.0, -123.0, 44.1, -123.1)
 	//13.69 Km --> 538976.38
 	//324 Deg
-	delta:=math.Abs(float64(dist-538976))
-	assert.Equal(t,true,delta<float64(dist)*.01)
-	assert.Equal(t,324,direction)
+	delta := math.Abs(float64(dist - 538976))
+	assert.Equal(t, true, delta < float64(dist)*.01)
+	assert.Equal(t, 324, direction)
 }
-
 
 func TestTile_Expand(t *testing.T) {
 
 	tile := NewTile()
 	fmt.Println("New Tile Created")
-	d:=make([]byte,0)
-	d=append(d,128)
-	data:=make([][]byte,0)
-	data=append(data,d)
-	tile.Data=data
+	d := make([]byte, 0)
+	d = append(d, 128)
+	data := make([][]byte, 0)
+	data = append(data, d)
+	tile.Data = data
 	st := time.Now()
 	resp := true
-	tile.Id=0
+	tile.Id = 0
 	for resp {
 		fmt.Println("Expanding from: ", len(tile.Data))
 		resp = tile.Expand()
@@ -98,7 +96,7 @@ func TestTile_Compress(t *testing.T) {
 
 	tile := NewTile()
 	fmt.Println("New Tile Created")
-	tile.Id=0
+	tile.Id = 0
 	st := time.Now()
 	resp := true
 	for resp {
@@ -109,7 +107,6 @@ func TestTile_Compress(t *testing.T) {
 	tile.SaveImage()
 	fmt.Println("Total Time To Expand: ", time.Since(st))
 }
-
 
 func TestFindRoute_Handle(t *testing.T) {
 	//sqare polygon
@@ -152,72 +149,99 @@ func TestFindRoute_Handle(t *testing.T) {
 	}
 }
 
-
 func TestTileSet_DumpDbAndCreateGenisisBlock(t *testing.T) {
-	ts:=new(TileSet)
+	ts := new(TileSet)
 	ts.Init()
-	err:=ts.DumpDbAndCreateGenisisBlock(true)
-	if err!=nil{
+	err := ts.DumpDbAndCreateGenisisBlock(true)
+	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
 }
 
-
 func TestTileSet_GetOldestToCompress(t *testing.T) {
 	/*
-	not actually creating files for these, so size in DB is bogus
-	 */
-	ts:=new(TileSet)
+		not actually creating files for these, so size in DB is bogus
+	*/
+	ts := new(TileSet)
 	ts.Init()
-	err:=ts.DumpDbAndCreateGenisisBlock(false)
-	if err!=nil{
+	err := ts.DumpDbAndCreateGenisisBlock(false)
+	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
-	for x:=0;x<10;x++{
-		tl:=NewTile()
-		tl.Id,err=ts.GetNewTileID()
-		if err!=nil{
+	for x := 0; x < 10; x++ {
+		tl := NewTile()
+		tl.Id, err = ts.GetNewTileID()
+		if err != nil {
 			fmt.Println(err.Error())
 			t.Fail()
 		}
-		ts.updateTileToDB(*tl,0)
+		ts.updateTileToDB(*tl, 0)
 	}
-	_,err=ts.conn.Exec("UPDATE tiles set onDisk=1")//fake them on disk
-	_,err=ts.conn.Exec("UPDATE tiles set comp=1 where id=1")
-	if err!=nil{
+	_, err = ts.conn.Exec("UPDATE tiles set onDisk=1") //fake them on disk
+	_, err = ts.conn.Exec("UPDATE tiles set comp=1 where id=1")
+	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
-	id,err:=ts.GetOldestToCompress()
-	if err!=nil{
+	id, err := ts.GetOldestToCompress()
+	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
 	//since we changed the size of id=1 to be 1 (fully compressed) the next oldest should be id=2
-	assert.Equal(t,2,id,"Oldest Should be id 2")
+	assert.Equal(t, 2, id, "Oldest Should be id 2")
 }
 
-
 func TestTileSet_CheckMemoryAndCompress(t *testing.T) {
-	ts:=new(TileSet)
+	ts := new(TileSet)
 	ts.Init()
-	err:=ts.DumpDbAndCreateGenisisBlock(false)
-	if err!=nil{
+	err := ts.ClearTileCache()
+	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
-	for x:=0;x<10;x++{
-		tl:=NewTile()
-		tl.Id,err=ts.GetNewTileID()
-		if err!=nil{
+	err = ts.DumpDbAndCreateGenisisBlock(false)
+	if err != nil {
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	for x := 0; x < 10; x++ {
+		tl := NewTile()
+		tl.Id, err = ts.GetNewTileID()
+		if err != nil {
 			fmt.Println(err.Error())
 			t.Fail()
 		}
 		tl.Pickle()
-		fmt.Println("Adding Tile: ",x)
-		ts.updateTileToDB(*tl,0)
+		fmt.Println("Adding Tile: ", x)
+		ts.updateTileToDB(*tl, 0)
 		ts.CheckMemoryAndCompress()
 	}
+}
+
+func TestGetDiskSpaceOfPathMB(t *testing.T) {
+	/*
+		Should return the size of all files in path or a specific file if that is what is defined in path
+		return is a float in MB
+	*/
+	mb := GetDiskSpaceOfPathMB("/home/chadg/logMon")
+	fmt.Println("DiskSize: ", mb)
+}
+
+func TestTile_UnPickle(t *testing.T) {
+	tile := NewTile()
+	tile.Id = 0
+	tile.Compress()
+	tile.Pickle()
+
+	tile = NewTile()
+	tile.Id = 0
+	err := tile.UnPickle()
+	if err != nil {
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	fmt.Println(len(tile.Data))
 }

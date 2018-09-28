@@ -33,7 +33,7 @@ func (self *MapData) Save() error {
 		return nil
 	}
 
-	err = ioutil.WriteFile("pickleMap", buf.Bytes(), 0644)
+	err = ioutil.WriteFile("pickleMap", buf.Bytes(), 0777)
 	return err
 }
 
