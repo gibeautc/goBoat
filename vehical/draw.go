@@ -1,20 +1,19 @@
 package vehical
 
-
-
 import (
-"fmt"
-"image"
-"image/color"
-"image/draw"
-"image/jpeg"
-"image/png"
-"log"
-"math"
-"os"
-"path/filepath"
-"runtime"
-"strings"
+	"fmt"
+	"image"
+	"image/color"
+	"image/draw"
+	"image/jpeg"
+	"image/png"
+	"log"
+	"math"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strconv"
+	"strings"
 )
 
 var saneLength, saneRadius, saneSides func(int) int
@@ -182,11 +181,10 @@ type RegularPolygon struct {
 	sides int
 }
 
-
 // This satisfies the Filler, Radiuser, Drawer, Sideser, and Stringer
 // interfaces.
 func NewRegularPolygon(fill color.Color, radius,
-sides int) *RegularPolygon {
+	sides int) *RegularPolygon {
 	// By calling NewCircle() we pass on any checking (e.g., bounds
 	// checking) to NewCircle() without having to know what if any is
 	// required.
@@ -328,6 +326,39 @@ func DrawShapes(img draw.Image, x, y int, shapes ...Drawer) error {
 		}
 	}
 	return nil
+}
+
+func LoadImage(id int) (*image.Gray, error) {
+	var img *image.Gray
+	file, err := os.Open(folder + "tileImages/" + strconv.Itoa(id) + ".png")
+	if err != nil {
+		return img, err
+	}
+	defer file.Close()
+	data := make([]byte, 0)
+	_, err = file.Read(data)
+	if err != nil {
+		return img, err
+	}
+
+	pngImage, err := png.Decode(file)
+	if err != nil {
+		return img, err
+	}
+
+	// Create a new grayscale image
+	bounds := pngImage.Bounds()
+	w, h := bounds.Max.X, bounds.Max.Y
+	gray := image.NewGray(image.Rect(0, 0, h, w))
+	for x := 0; x < w; x++ {
+		for y := 0; y < h; y++ {
+			oldColor := pngImage.At(x, y)
+			grayColor := image.Image.ColorModel(color.GrayModel).Convert(oldColor)
+			gray.Set(x, y, grayColor)
+		}
+	}
+	return gray, err
+
 }
 
 func SaveImage(img image.Image, filename string) error {

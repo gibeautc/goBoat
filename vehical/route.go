@@ -205,26 +205,26 @@ func Draw(pS *PolySet, rT *Route, start Point, end Point) {
 		drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 	}
 
-	SaveImage(img, "world.jpg")
+	SaveImage(img, "world.png")
 	if rT != nil {
 		if rT.Count == 0 {
 			//direct Route, only need to draw start to finish
 			drawRtLine(img, start, end, minX, maxX, minY, maxY, imgSize, true)
-			SaveImage(img, "Route.jpg")
+			SaveImage(img, "Route.png")
 			return
 		}
 		//we have more nodes
 		drawRtLine(img, start, rT.Points[0], minX, maxX, minY, maxY, imgSize, true)
 		imageCount := 0
-		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".jpg")
+		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".png")
 		imageCount++
 		for x := 0; x < rT.Count-1; x++ {
 			drawRtLine(img, rT.Points[x], rT.Points[x+1], minX, maxX, minY, maxY, imgSize, true)
-			SaveImage(img, "Route"+strconv.Itoa(imageCount)+".jpg")
+			SaveImage(img, "Route"+strconv.Itoa(imageCount)+".png")
 			imageCount++
 		}
 		drawRtLine(img, rT.Points[rT.Count-1], end, minX, maxX, minY, maxY, imgSize, true)
-		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".jpg")
+		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".png")
 	}
 
 }
@@ -253,8 +253,9 @@ func DrawWorld(pS *PolySet) {
 		drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 	}
 
-	SaveImage(img, "world.jpg")
+	SaveImage(img, "world.png")
 }
+
 func drawRtLine(img draw.Image, start Point, end Point, minX float64, maxX float64, minY float64, maxY float64, imgSize int, isRoute bool) {
 	var sP, eP image.Point
 	sP.X = mapFloatToInt(start.Lon, minX, maxX, 0, imgSize)
@@ -280,13 +281,6 @@ type Point struct {
 	Lon, Lat      float64
 	totalDistance float64
 	prev          int
-}
-
-func calcDist(sX float64, sY float64, eX float64, eY float64) float64 {
-	//todo change to use a more accurate distance calculation
-	eX -= sX
-	eY -= sY
-	return math.Sqrt(eX*eX + eY*eY)
 }
 
 func pointInPolygonSet(testX float64, testY float64, allPolys PolySet) bool {
@@ -491,23 +485,23 @@ func ShortestPath2(start Point, end Point, allPolys PolySet) (Route, error) {
 	pointList = append(pointList, end)
 	pointList[0].totalDistance = 0.0
 
-	tc:=0
-	bestJ:=0
-	bestDist:=math.MaxFloat64
-	for bestJ!=len(pointList)-1{
-		for j := tc+1; j < len(pointList); j++ {
+	tc := 0
+	bestJ := 0
+	bestDist := math.MaxFloat64
+	for bestJ != len(pointList)-1 {
+		for j := tc + 1; j < len(pointList); j++ {
 			dist := pointDis(allPolys, pointList[tc], pointList[j]) + pointList[tc].totalDistance
 
 			if dist < pointList[j].totalDistance {
 				pointList[j].totalDistance = dist
 				pointList[j].prev = tc
-				bestJ=j
-				bestDist=dist
+				bestJ = j
+				bestDist = dist
 			}
 		}
 
 	}
-	_=bestDist
+	_ = bestDist
 	//to get the Route, have to work from end to
 	backwardsRoute := make([]Point, 0)
 	index := len(pointList) - 1

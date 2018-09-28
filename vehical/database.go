@@ -2,12 +2,10 @@ package vehical
 
 import (
 	"database/sql"
-	"fmt"
+	"errors"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
-	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -49,42 +47,13 @@ func (self *TileSet) updateTileToDB(tile Tile, index int) error {
 	//	onDisk=0
 	//}
 	_, err := self.conn.Exec("REPLACE INTO tiles(id,onDisk,comp,inRam,lastUsed,NWLat,NWLon,NELat,NELon,SELat,SELon,SWLat,SWLon,N,S,E,W) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)",
-		tile.Id, onDisk, len(tile.Data), index, time.Now().Unix(), tile.NW.Lat, tile.NW.Lon, tile.NE.Lat, tile.NE.Lon, tile.SE.Lat, tile.SE.Lon, tile.SW.Lat, tile.SW.Lon, tile.IdN, tile.IdS, tile.IdE, tile.IdW)
+		tile.Id, onDisk, tile.Size, index, time.Now().Unix(), tile.Bounds.NW.Lat, tile.Bounds.NW.Lon, tile.Bounds.NE.Lat, tile.Bounds.NE.Lon, tile.Bounds.SE.Lat, tile.Bounds.SE.Lon, tile.Bounds.SW.Lat, tile.Bounds.SW.Lon, tile.Bounds.IdN, tile.Bounds.IdS, tile.Bounds.IdE, tile.Bounds.IdW)
 	return err
 }
 
 func (self *TileSet) UpdateAllTilesInDB() error {
 	for x := 0; x < len(self.activeTiles); x++ {
 		err := self.updateTileToDB(self.activeTiles[x], x)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (self *TileSet) updateTilesFromDiskToDB() error {
-	//now check tiles on disk
-	files, err := filepath.Glob("tiles/*")
-	if err != nil {
-		return err
-	}
-	t := NewTile()
-	for x := 0; x < len(files); x++ {
-		str := files[x]
-		str = strings.Replace(str, "tiles/", "", 1)
-		id, err := strconv.Atoi(str)
-		if err != nil {
-			fmt.Println("Bad File Name...ignoring: ", str)
-			continue
-		}
-
-		t.Id = uint32(id)
-		err = t.UnPickle()
-		if err != nil {
-			return err
-		}
-		err = self.updateTileToDB(*t, -1)
 		if err != nil {
 			return err
 		}
@@ -119,11 +88,11 @@ func (self *TileSet) DumpDbAndCreateGenisisBlock(createGenisis bool) error {
 	SW.Lat = 44.61596169811975
 	SW.Lon = -123.07328247537501
 
-	t.NW = NW
-	t.NE = NE
-	t.SE = SE
-	t.SW = SW
-	err = t.Pickle()
+	t.Bounds.NW = NW
+	t.Bounds.NE = NE
+	t.Bounds.SE = SE
+	t.Bounds.SW = SW
+	err = self.Pickle(*t)
 	if err != nil {
 		return err
 	}
@@ -137,6 +106,7 @@ func (self *TileSet) GetOldestToCompress() (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	defer rows.Close()
 	oldest := time.Now().Unix() + 100
 	var bestId int
 	id := 0
@@ -152,4 +122,29 @@ func (self *TileSet) GetOldestToCompress() (int, error) {
 		}
 	}
 	return bestId, nil
+}
+
+func (self *TileSet) GetIdByPoint(p Point) (int, error) {
+	rows, err := self.conn.Query("SELECT id,NWLat,NWLon,SWLat,SWLon,SELat,SELon,NELat,NELon FROM tiles")
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	var id int
+	var NW, SW, SE, NE Point
+	for rows.Next() {
+		err = rows.Scan(&id, &NW.Lat, &NW.Lon, &SW.Lat, &SW.Lon, &SE.Lat, &SE.Lon, &NE.Lat, &NE.Lon)
+		if p.Lat > SW.Lat && p.Lat < NW.Lat {
+			if p.Lon > SW.Lon && p.Lon < SE.Lon {
+				return id, nil
+			}
+		}
+	}
+	return 0, errors.New("tile not found for point")
+}
+
+func (self *TileSet) GetBounds(id uint32) (Bounds, error) {
+	//todo Write ME!!!!
+	var b Bounds
+	return b, nil
 }

@@ -74,19 +74,15 @@ func TestTile_Expand(t *testing.T) {
 
 	tile := NewTile()
 	fmt.Println("New Tile Created")
-	d := make([]byte, 0)
-	d = append(d, 128)
-	data := make([][]byte, 0)
-	data = append(data, d)
-	tile.Data = data
+	//todo make a small image
+
 	st := time.Now()
 	resp := true
 	tile.Id = 0
 	for resp {
-		fmt.Println("Expanding from: ", len(tile.Data))
+		fmt.Println("Expanding from: ", tile.Size)
 		resp = tile.Expand()
 		fmt.Println("Done Expanding")
-		tile.Pickle()
 	}
 	tile.SaveImage()
 	fmt.Println("Total Time To Expand: ", time.Since(st))
@@ -100,9 +96,8 @@ func TestTile_Compress(t *testing.T) {
 	st := time.Now()
 	resp := true
 	for resp {
-		fmt.Println("Compressing from: ", len(tile.Data))
+		fmt.Println("Compressing from: ", tile.Size)
 		resp = tile.Compress()
-		tile.Pickle()
 	}
 	tile.SaveImage()
 	fmt.Println("Total Time To Expand: ", time.Since(st))
@@ -196,17 +191,12 @@ func TestTileSet_GetOldestToCompress(t *testing.T) {
 
 func TestTileSet_CheckMemoryAndCompress(t *testing.T) {
 	ts := new(TileSet)
-	ts.Init()
-	err := ts.ClearTileCache()
+	err := ts.Init()
 	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
-	err = ts.DumpDbAndCreateGenisisBlock(false)
-	if err != nil {
-		fmt.Println(err.Error())
-		t.Fail()
-	}
+
 	for x := 0; x < 10; x++ {
 		tl := NewTile()
 		tl.Id, err = ts.GetNewTileID()
@@ -214,7 +204,7 @@ func TestTileSet_CheckMemoryAndCompress(t *testing.T) {
 			fmt.Println(err.Error())
 			t.Fail()
 		}
-		tl.Pickle()
+		ts.Pickle(*tl)
 		fmt.Println("Adding Tile: ", x)
 		ts.updateTileToDB(*tl, 0)
 		ts.CheckMemoryAndCompress()
@@ -243,5 +233,78 @@ func TestTile_UnPickle(t *testing.T) {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
-	fmt.Println(len(tile.Data))
+	fmt.Println(tile.Size)
+}
+
+func TestTileSet_GetIdByPoint(t *testing.T) {
+	ts := new(TileSet)
+	err := ts.Init()
+	if err != nil {
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	var p Point
+	p.Lat = 44.6169
+	p.Lon = -123.072815
+	id, err := ts.GetIdByPoint(p)
+	if err != nil {
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	assert.Equal(t, 1, id, "Should be inside genisis block")
+}
+
+func TestTile_GetPixelByCords(t *testing.T) {
+	tile := NewTile()
+	tile.NW.Lat = 44.0
+	tile.NW.Lon = -123.0
+	tile.NE.Lat = 44.0
+	tile.NE.Lon = -124.0
+	tile.SE.Lat = 43.0
+	tile.SE.Lon = -124.0
+	tile.SW.Lat = 43.0
+	tile.SW.Lon = -123.0
+
+	var p Point
+	p.Lat = 43.5
+	p.Lon = -123.5
+	x, y := tile.GetPixelByCords(p)
+	fmt.Println("x: ", x)
+	fmt.Println("y: ", y)
+	assert.Equal(t, 2048, x, "Should be middle")
+	assert.Equal(t, 2048, y, "Should be middle")
+}
+
+func TestTile_SaveImage(t *testing.T) {
+	tile := NewTile()
+	tile.NW.Lat = 44.0
+	tile.NW.Lon = -123.0
+	tile.NE.Lat = 44.0
+	tile.NE.Lon = -124.0
+	tile.SE.Lat = 43.0
+	tile.SE.Lon = -124.0
+	tile.SW.Lat = 43.0
+	tile.SW.Lon = -123.0
+	tile.Id = 0
+
+	var cur, obj Point
+	cur.Lat = 43.1
+	cur.Lon = -123.1
+	obj.Lat = 43.7
+	obj.Lon = -123.7
+	st := time.Now()
+	err := tile.AddDistanceData(cur, obj)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	fmt.Println("AddDistanceData Time: ", time.Since(st))
+	st = time.Now()
+	err = tile.SaveImage()
+	if err != nil {
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	fmt.Println("SaveImage Time: ", time.Since(st))
 }

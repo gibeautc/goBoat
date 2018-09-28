@@ -9,7 +9,12 @@ import (
 )
 
 type MapData struct {
-	Data *osm.Map
+	Data   *osm.Map
+	Router Router
+}
+
+type Router interface {
+	Parse()
 }
 
 func (self *MapData) Load(filename string) error {

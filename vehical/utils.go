@@ -1,14 +1,14 @@
 package vehical
 
 import (
+	"database/sql"
+	"fmt"
 	"math"
 	"os"
-	"database/sql"
 	"time"
-	"fmt"
 )
 
-const folder="/home/chadg/go/src/github.com/gibeautc/goBoat/"
+const folder = "/home/chadg/go/src/github.com/gibeautc/goBoat/"
 
 /*
 latLst,lonLst are decimal degrees  (float64)
@@ -16,6 +16,19 @@ distance is measured in inches (int64)
 angles are measred in degrees (int)
 speed in mph
 */
+
+func SmallestCommonDem(x int, y int) int {
+	/*
+		since we are using this on tiles, going to just start at 2048 as I think that is the biggest there could be
+	*/
+	low := 4096
+	for d := 2048; d > 0; x-- {
+		if x%d == 0 && y%d == 0 {
+			low = d
+		}
+	}
+	return low
+}
 
 func DistanceBetween(lat1 float64, lon1 float64, lat2 float64, lon2 float64) (int64, int) {
 	//todo:write tests and test
@@ -36,12 +49,12 @@ func DistanceBetween(lat1 float64, lon1 float64, lat2 float64, lon2 float64) (in
 	*/
 
 	/*
-	 Bearing
-	 where 	φ1,λ1 is the start point, φ2,λ2 the end point (Δλ is the difference in longitude)
-	 var latLst = Math.sin(λ2-λ1) * Math.cos(φ2);
-	var lonLst = Math.cos(φ1)*Math.sin(φ2) -
-	        Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
-	var brng = Math.atan2(latLst, lonLst).toDegrees();
+		 Bearing
+		 where 	φ1,λ1 is the start point, φ2,λ2 the end point (Δλ is the difference in longitude)
+		 var latLst = Math.sin(λ2-λ1) * Math.cos(φ2);
+		var lonLst = Math.cos(φ1)*Math.sin(φ2) -
+		        Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
+		var brng = Math.atan2(latLst, lonLst).toDegrees();
 	*/
 
 	R := 6371000.0 //m
@@ -103,21 +116,19 @@ func GetCords(lat float64, lon float64, distance int64, direction int) (float64,
 	d := float64(distance) * .0000254
 	startLat := toRadians(lat)
 	startLon := toRadians(lon)
-	lat2 := math.Asin(math.Sin(startLat)*math.Cos(d/R) + math.Cos(startLat)*math.Sin(d/R) * math.Cos(angle))
+	lat2 := math.Asin(math.Sin(startLat)*math.Cos(d/R) + math.Cos(startLat)*math.Sin(d/R)*math.Cos(angle))
 	lon2 := startLon + math.Atan2(math.Sin(angle)*math.Sin(d/R)*math.Cos(startLat), math.Cos(d/R)-math.Sin(startLat)*math.Sin(lat2))
 	return toDegrees(lat2), toDegrees(lon2)
 }
 
-
-func sliceContainsUint32(lst []uint32,obj uint32) bool{
-	for x:=0;x<len(lst);x++{
-		if lst[x]==obj{
+func sliceContainsUint32(lst []uint32, obj uint32) bool {
+	for x := 0; x < len(lst); x++ {
+		if lst[x] == obj {
 			return true
 		}
 	}
 	return false
 }
-
 
 func Exists(name string) bool {
 	_, err := os.Stat(name)
@@ -135,26 +146,25 @@ type App struct {
 	AllPolly    *PolySet
 	Events      chan Msg
 	Idle        bool
-	Sensing 	*SensingUnit
-	HaveRoute	bool	//set to true when we are in the process of finding a route
+	Sensing     *SensingUnit
+	HaveRoute   bool //set to true when we are in the process of finding a route
 }
 
-
-func (app *App) QueMsg(msg Msg){
-	app.Events<-msg
+func (app *App) QueMsg(msg Msg) {
+	app.Events <- msg
 }
 
-func (app *App) WaitForEvent() Msg{
-	if len(app.Events)==0{
+func (app *App) WaitForEvent() Msg {
+	if len(app.Events) == 0 {
 		//only start the timer if we dont already have something to process
-		app.AddTimer(1000,TimeOut{},false)
+		app.AddTimer(1000, TimeOut{}, false)
 	}
-	for{
-		ev:=<-app.Events
-		if !app.Idle && ev.IsIdle(){
+	for {
+		ev := <-app.Events
+		if !app.Idle && ev.IsIdle() {
 			//we want to delay the event
-			fmt.Println("Delaying Event: ",ev)
-			app.AddTimer(500,ev,false)
+			fmt.Println("Delaying Event: ", ev)
+			app.AddTimer(500, ev, false)
 			continue
 		}
 		return ev
@@ -162,43 +172,71 @@ func (app *App) WaitForEvent() Msg{
 
 }
 
-func(app *App) AddTimer(interval int,msg Msg,repeating bool){
-	if repeating{
-		go app.repeatingTimer(msg,interval)
-	}else{
-		go app.nonRepeatingTimer(msg,interval)
+func (app *App) AddTimer(interval int, msg Msg, repeating bool) {
+	if repeating {
+		go app.repeatingTimer(msg, interval)
+	} else {
+		go app.nonRepeatingTimer(msg, interval)
 	}
 }
 
-func (app *App) repeatingTimer(msg Msg,interval int){
-	for{
-		time.Sleep(time.Duration(interval) *time.Millisecond)
-		app.Events<-msg
+func (app *App) repeatingTimer(msg Msg, interval int) {
+	for {
+		time.Sleep(time.Duration(interval) * time.Millisecond)
+		app.Events <- msg
 	}
 }
 
-func (app *App) nonRepeatingTimer(msg Msg,interval int){
-	time.Sleep(time.Duration(interval) *time.Millisecond)
-	app.Events<-msg
+func (app *App) nonRepeatingTimer(msg Msg, interval int) {
+	time.Sleep(time.Duration(interval) * time.Millisecond)
+	app.Events <- msg
 }
 
-
-func (app *App) DoRoute(){
+func (app *App) DoRoute() {
 	//careful! we are in a go routine!
 
 	var err error
 	app.Route, err = ShortestPath(*app.CurLocation, *app.Destination, *app.AllPolly)
 	if err != nil {
-		app.HaveRoute=false
+		app.HaveRoute = false
 		fmt.Println("Routing Error!")
 		fmt.Println(err.Error())
 		DrawWorld(app.AllPolly)
-	}else{
-		app.HaveRoute=true
+	} else {
+		app.HaveRoute = true
 	}
 	app.Route.Print()
 
 	if err == nil {
 		Draw(app.AllPolly, &app.Route, *app.CurLocation, *app.Destination)
 	}
+}
+
+func (app *App) PrintState() {
+	fmt.Println("**********Current State**********")
+	fmt.Println("Length of activeTiles: ", len(app.LocalMap.activeTiles))
+	fmt.Println("")
+}
+
+func (app *App) Init() {
+	st := time.Now()
+	app.Events = make(chan Msg, 100)
+	app.Idle = true
+	app.Conn = ConnectToDB("database/main.db")
+	app.OsmMap = new(MapData)
+	app.LocalMap = new(TileSet)
+	app.LocalMap.Init()
+	app.AllPolly = new(PolySet)
+	app.Sensing = NewSensingUnit(app)
+	app.Sensing.Run()
+	app.HaveRoute = false
+	//44.616028, -123.073269
+	app.CurLocation = new(Point)
+	app.CurLocation.Lat = 44.616028
+	app.CurLocation.Lon = -123.073269
+
+	app.Destination = new(Point)
+	app.Destination.Lat = 44.6378
+	app.Destination.Lon = -123.1445
+	fmt.Println("App initialized time: ", time.Since(st))
 }

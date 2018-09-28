@@ -1,14 +1,11 @@
 package vehical
 
 import (
-	"bytes"
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/hydrogen18/stalecucumber"
 	"image"
 	"image/color"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -36,18 +33,32 @@ const (
 	maxDiskSpace    = 200 //in MB
 )
 
+type Bounds struct {
+	SW  Point
+	SE  Point
+	NW  Point
+	NE  Point
+	IdN int
+	IdS int
+	IdW int
+	IdE int
+}
+
 type TileSet struct {
 	activeTiles []Tile
 	conn        *sql.DB
 }
 
-func (self *TileSet) Init() {
+func (self *TileSet) Init() error {
 	self.conn = ConnectToDB(folder + "database/tileSet.db")
+	self.ClearTileCache()
+	self.DumpDbAndCreateGenisisBlock(true)
 	err := self.dbInit()
 	if err != nil {
 		fmt.Println(err.Error())
+		return err
 	}
-	self.updateTilesFromDiskToDB()
+	return nil
 }
 
 func GetDiskSpaceOfPathMB(path string) float32 {
@@ -103,7 +114,7 @@ func (self *TileSet) SaveAllActiveToDisk() {
 	fmt.Println("Saving All Active Files to Disk")
 	//todo make a copy of all tiles, and then save those to disk. this way it can be done in a go routine
 	for x := 0; x < len(self.activeTiles); x++ {
-		self.activeTiles[x].Pickle()
+		self.Pickle(self.activeTiles[x])
 	}
 }
 
@@ -127,9 +138,7 @@ func (self *TileSet) CheckMemoryAndCompress() error {
 			break
 		}
 		fmt.Println("Going to compress tile with ID: ", id)
-		t := NewTile()
-		t.Id = uint32(id)
-		err = t.UnPickle()
+		t, err := self.UnPickle(uint32(id))
 		if err != nil {
 			return err
 		}
@@ -137,12 +146,12 @@ func (self *TileSet) CheckMemoryAndCompress() error {
 			fmt.Println("could not compres the tile we were given")
 			return errors.New("could not compres the tile we were given")
 		}
-		err = t.Pickle()
+		err = self.Pickle(*t)
 		if err != nil {
 			fmt.Println("Pickle Failed!!!!")
 			return err
 		}
-		self.conn.Exec("UPDATE tiles set comp=$1 where id=$2", len(t.Data), t.Id)
+		self.conn.Exec("UPDATE tiles set comp=$1 where id=$2", t.Size, t.Id)
 		used = GetDiskSpaceOfPathMB(folder + "tiles/")
 
 	}
@@ -158,8 +167,38 @@ func (self *TileSet) LoadTileById(id uint32) (int, error) {
 	*/
 
 	//check if its in activeTiles first
+	for x := 0; x < len(self.activeTiles); x++ {
+		if self.activeTiles[x].Id == id {
+			return x, nil
+		}
+	}
 
 	//then check on disk
+	files, err := filepath.Glob(folder + "tiles/*")
+	if err != nil {
+		return -1, err
+	}
+	for x := 0; x < len(files); x++ {
+		str := files[x]
+		str = strings.Replace(str, folder+"tilesImages/", "", 1)
+		fid, err := strconv.Atoi(str)
+		if err != nil {
+			fmt.Println("Bad File Name...ignoring: ", str)
+			continue
+		}
+		if id == uint32(fid) {
+
+			t, err := self.UnPickle(id)
+			if err != nil {
+				return 0, err
+			}
+			t.FullyExpand()
+			//place tile in activeTiles
+			return self.AddTile(*t), nil
+
+		}
+
+	}
 
 	//since we are looking for one by id, if we have not found it, return error
 	return 0, nil
@@ -183,46 +222,38 @@ func (self *TileSet) LoadTileForPoint(p Point) (int, error) {
 		in activeTiles and return index
 
 		Since this action could re-order activeTiles, any previously requested indexes are no longer valid
-
-
-
 	*/
 
-	//todo does not seem to be working!
+	//todo does not seem to be working!  might have been because of path issue, need to test again now
 	for x := 0; x < len(self.activeTiles); x++ {
-		if self.activeTiles[x].isPointInTile(p) {
+		if self.isPointInTile(p, self.activeTiles[x].Id) {
 			return x, nil
 		}
 	}
 
 	//now check tiles on disk
-	files, err := filepath.Glob("tiles/*")
+	files, err := filepath.Glob(folder + "tiles/*")
 	if err != nil {
 		return 0, err
 	}
-	t := NewTile()
 	for x := 0; x < len(files); x++ {
-		str := files[x]
-		str = strings.Replace(str, "tiles/", "", 1)
-		id, err := strconv.Atoi(str)
-		if err != nil {
-			fmt.Println("Bad File Name...ignoring: ", str)
-			continue
-		}
-
-		t.Id = uint32(id)
-		err = t.UnPickle()
+		id, err := self.GetIdByPoint(p)
 		if err != nil {
 			return 0, err
 		}
-		if t.isPointInTile(p) {
-			//found one that works, now add it to self
-			return self.AddTile(*t), nil
+		t, err := self.UnPickle(uint32(id))
+		if err != nil {
+			return 0, err
 		}
+		t.FullyExpand()
+		return self.AddTile(*t), nil
+
 	}
 	//if we get to here, we dont have it on disk, or in memory, so use new tile, but get new ID for it
+	t := NewTile()
 	t.Id, err = self.GetNewTileID()
-
+	//todo need to create tile bounds, .....not trival
+	fmt.Println("had to create new tile for point, but it has not bounds.......")
 	if err != nil {
 		return 0, err
 	}
@@ -238,142 +269,177 @@ func (self *TileSet) AddTile(t Tile) int {
 	}
 	//we need to move somthing to disk....for now it will just be the last one
 	//todo come up with a better way to remove one.  Either by time since we have used it, or by distance
-	self.activeTiles[activeTileLimit-1].Pickle()
+	self.Pickle(self.activeTiles[activeTileLimit-1])
 	self.activeTiles[activeTileLimit-1] = t
 	return activeTileLimit - 1
 }
 
+func (self *TileSet) AddDistanceDataSet(curLocation Point, sensorLocation Point) error {
+	/*
+		Given our current location, and a location of a "hit" update tile(s) data accordingly
+		increase pixel at location by some value IncreasePercentage
+		decrease all pixels between curLocation and sensorLocation by some value DecreasePercentage
+
+		Should always be doing this on fully expanded tiles, but should try and make it work either way
+	*/
+
+	//are both points on same tile?
+	sid, err := self.GetIdByPoint(curLocation)
+	if err != nil {
+		return err
+	}
+	eid, err := self.GetIdByPoint(sensorLocation)
+	if err != nil {
+		return err
+	}
+	if sid == eid {
+		//both on same tile!
+		index, err := self.LoadTileById(uint32(sid))
+		if err != nil {
+			return err
+		}
+
+		return self.activeTiles[index].AddDistanceData(curLocation, sensorLocation)
+	} else {
+		//on seperate tiles, will need to find boundary point that is included on both tiles
+
+	}
+	return nil
+}
+
+func (self *TileSet) Pickle(t Tile) error {
+	fmt.Println("Starting Pickle Process")
+	st := time.Now()
+	err := self.updateTileToDB(t, -1)
+	if err != nil {
+		return err
+	}
+	err = t.SaveImage()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Pickling took: ", time.Since(st))
+	return nil
+}
+
+func (self *TileSet) UnPickle(id uint32) (*Tile, error) {
+	var err error
+	t := NewTile()
+	t.Id = id
+	t.Bounds = self.GetBounds(id)
+	t.Img, err = LoadImage(int(id))
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 type Tile struct {
-	Data [][]byte
-	Id   uint32
-	IdN  uint32
-	IdS  uint32
-	IdW  uint32
-	IdE  uint32
-	NW   Point //points for the four corners of the tile, can also be used to make a square to see if a point is in a given tile
-	SW   Point
-	NE   Point
-	SE   Point
+	//Data [][]byte
+	Size   int
+	Id     uint32
+	Bounds Bounds
+	Img    *image.Gray
 }
 
 func NewTile() *Tile {
 	t := new(Tile)
-	for x := 0; x < tileSize; x++ {
-		d := make([]byte, tileSize)
-		for y := 0; y < tileSize; y++ {
-			d[y] = 128 //new Tile will be filled with middle numbers (unknown)
+	t.Size = tileSize
+	r := image.Rect(0, 0, t.Size, t.Size)
+	t.Img = image.NewGray(r)
+	for x := 0; x < t.Size; x++ {
+		for y := 0; y < t.Size; y++ {
+			c := color.Gray{}
+			c.Y = 128
+			t.Img.Set(x, y, c)
 		}
-		t.Data = append(t.Data, d)
+
 	}
 
 	return t
 }
 
-func (self *Tile) Pickle() error {
-	fmt.Println("Starting Pickle Process")
-	st := time.Now()
-	buf := new(bytes.Buffer)
-	_, err := stalecucumber.NewPickler(buf).Pickle(&self)
-	if err != nil {
-		return nil
-	}
-
-	err = ioutil.WriteFile(folder+"tiles/"+strconv.Itoa(int(self.Id)), buf.Bytes(), 0777)
-	fmt.Println("Pickling took: ", time.Since(st))
-	return err
-}
-
-/*
-File saved as:		2416712524
-loading back as: 	2416712523
-*/
-
-func (self *Tile) UnPickle() error {
-	var err error
-	//data, err := ioutil.ReadFile("tiles/"+strconv.Itoa(int(self.Id)))
-
-	f, err := os.Open(folder + "tiles/" + strconv.Itoa(int(self.Id)))
-	if err != nil {
-		return err
-	}
-
-	err = stalecucumber.UnpackInto(&self).From(stalecucumber.Unpickle(f))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (self *Tile) isPointInTile(p Point) bool {
-	if p.Lon < self.NE.Lon && p.Lon > self.NW.Lon {
-		if p.Lat > self.SW.Lat && p.Lat < self.NW.Lat {
-			return true
-		}
-	}
+func (self *TileSet) isPointInTile(p Point, id uint32) bool {
+	//todo write this just look up the data in the database
 
 	return false
 }
 
 func (self *Tile) Compress() bool {
 	fmt.Println("Compressing tile: ", self.Id)
-	fmt.Println("Starting Size: ", len(self.Data))
-	if len(self.Data) <= maxCompression {
+	fmt.Println("Starting Size: ", self.Size)
+
+	if self.Size <= maxCompression {
 		return false
 	}
-	newData := make([][]byte, 0)
-	newSize := len(self.Data) / 2
-	for x := 0; x < newSize; x++ {
-		newRow := make([]byte, 0)
-		for y := 0; y < newSize; y++ {
-			sum := int(self.Data[x*2][y*2]) + int(self.Data[x*2+1][y*2]) + int(self.Data[x*2][y*2+1]) + int(self.Data[x*2+1][y*2+1])
-			newRow = append(newRow, byte(sum/4))
+
+	self.Size = self.Size / 2
+	r := image.Rect(0, 0, self.Size, self.Size)
+	newImg := image.NewGray(r)
+
+	var c color.Gray
+	for x := 0; x < self.Size; x++ {
+		for y := 0; y < self.Size; y++ {
+			sum := int(self.Img.GrayAt(x*2, y*2).Y) + int(self.Img.GrayAt(x*2+1, y*2).Y) + int(self.Img.GrayAt(x*2, y*2+1).Y) + int(self.Img.GrayAt(x*2+1, y*2+1).Y)
+			c.Y = uint8(sum / 4)
+			newImg.Set(x, y, c)
 		}
-		newData = append(newData, newRow)
 	}
-	self.Data = newData
-	fmt.Println("New Size: ", len(self.Data))
+	self.Img = newImg
+	fmt.Println("New Size: ", self.Size)
 	return true
+}
+
+func (self *Tile) FullyExpand() {
+	for self.Expand() {
+		fmt.Println("Expanded to: ", self.Size)
+	}
 }
 
 func (self *Tile) Expand() bool {
-	if len(self.Data) >= tileSize {
+	if self.Size >= tileSize {
 		return false
 	}
-	newData := make([][]byte, 0)
-	newSize := len(self.Data) * 2
-	for x := 0; x < newSize; x += 2 {
-		newRow := make([]byte, 0)
-		for y := 0; y < newSize; y += 2 {
-			value := self.Data[x/2][y/2]
-			newRow = append(newRow, value)
-			newRow = append(newRow, value)
+
+	self.Size = self.Size * 2
+	r := image.Rect(0, 0, self.Size, self.Size)
+	newImg := image.NewGray(r)
+	var c color.Gray
+	for x := 0; x < self.Size; x += 2 {
+		for y := 0; y < self.Size; y += 2 {
+			c.Y = self.Img.GrayAt(x/2, y/2).Y
+			newImg.Set(x/2, y/2, c)
+			newImg.Set(x/2+1, y/2, c)
+			newImg.Set(x/2, y/2+1, c)
+			newImg.Set(x/2+1, y/2+1, c)
 
 		}
-		newData = append(newData, newRow)
-		newData = append(newData, newRow)
+
 	}
-	self.Data = newData
+	self.Img = newImg
 	return true
 }
 
-func (self *Tile) PrintData() {
-	for x := 0; x < len(self.Data); x++ {
-		fmt.Println(self.Data[x])
-	}
+func (self *Tile) SaveImage() error {
+
+	return SaveImage(self.Img, folder+"tileImage/"+strconv.Itoa(int(self.Id))+".png")
+}
+
+func (self *Tile) GetPixelByCords(p Point) (int, int) {
+
+	percentX := (p.Lon - self.Bounds.SW.Lon) / (self.Bounds.SE.Lon - self.Bounds.SW.Lon)
+	percentY := (p.Lat - self.Bounds.SW.Lat) / (self.Bounds.NW.Lat - self.Bounds.SW.Lat)
+	return int(float64(self.Size) * percentX), int(float64(self.Size) * percentY)
 
 }
 
-func (self *Tile) SaveImage() error {
-	imgSize := len(self.Data)
-	r := image.Rect(0, 0, imgSize, imgSize)
-	img := image.NewAlpha(r)
-	for x := 0; x < len(self.Data); x++ {
-		for y := 0; y < len(self.Data); y++ {
-			c := color.Opaque
-			c.A = uint16(self.Data[x][y]) * 256
-			img.Set(x, y, c)
-		}
+func (self *Tile) AddDistanceData(curLocation Point, objectLocation Point) error {
+	//we know both points are on the tile already, just need to update pixel info
 
-	}
-	return SaveImage(img, "tileImage/"+strconv.Itoa(int(self.Id))+".jpg")
+	var ls, le image.Point
+	ls.X, ls.Y = self.GetPixelByCords(curLocation)
+	le.X, le.Y = self.GetPixelByCords(objectLocation)
+	drawLine(self.Img, ls, le, color.White)
+	return nil
 }
