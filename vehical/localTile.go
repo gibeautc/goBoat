@@ -125,7 +125,7 @@ func (self *TileSet) CheckMemoryAndCompress() error {
 	*/
 
 	//du -hs tiles/
-	used := GetDiskSpaceOfPathMB(folder + "tiles/")
+	used := GetDiskSpaceOfPathMB(folder + "tileImage/")
 	for used > maxDiskSpace {
 		fmt.Println("Need to compress tiles!!!!")
 		id, err := self.GetOldestToCompress()
@@ -152,7 +152,7 @@ func (self *TileSet) CheckMemoryAndCompress() error {
 			return err
 		}
 		self.conn.Exec("UPDATE tiles set comp=$1 where id=$2", t.Size, t.Id)
-		used = GetDiskSpaceOfPathMB(folder + "tiles/")
+		used = GetDiskSpaceOfPathMB(folder + "tileImage/")
 
 	}
 	fmt.Println("No Need to Compress at this time")
@@ -174,7 +174,7 @@ func (self *TileSet) LoadTileById(id uint32) (int, error) {
 	}
 
 	//then check on disk
-	files, err := filepath.Glob(folder + "tiles/*")
+	files, err := filepath.Glob(folder + "tileImage/*")
 	if err != nil {
 		return -1, err
 	}
@@ -206,11 +206,11 @@ func (self *TileSet) LoadTileById(id uint32) (int, error) {
 
 func (self *TileSet) ClearTileCache() error {
 
-	err := os.RemoveAll(folder + "tiles/")
+	err := os.RemoveAll(folder + "tileImage/")
 	if err != nil {
 		return err
 	}
-	err = os.Mkdir(folder+"tiles/", 0777)
+	err = os.Mkdir(folder+"tileImage/", 0777)
 	return err
 
 }
@@ -232,7 +232,7 @@ func (self *TileSet) LoadTileForPoint(p Point) (int, error) {
 	}
 
 	//now check tiles on disk
-	files, err := filepath.Glob(folder + "tiles/*")
+	files, err := filepath.Glob(folder + "tileImage/*")
 	if err != nil {
 		return 0, err
 	}
@@ -327,7 +327,10 @@ func (self *TileSet) UnPickle(id uint32) (*Tile, error) {
 	var err error
 	t := NewTile()
 	t.Id = id
-	t.Bounds = self.GetBounds(id)
+	t.Bounds,err = self.GetBounds(id)
+	if err!=nil{
+		return t,err
+	}
 	t.Img, err = LoadImage(int(id))
 	if err != nil {
 		return t, err

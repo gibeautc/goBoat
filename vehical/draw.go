@@ -330,7 +330,7 @@ func DrawShapes(img draw.Image, x, y int, shapes ...Drawer) error {
 
 func LoadImage(id int) (*image.Gray, error) {
 	var img *image.Gray
-	file, err := os.Open(folder + "tileImages/" + strconv.Itoa(id) + ".png")
+	file, err := os.Open(folder + "tileImage/" + strconv.Itoa(id) + ".png")
 	if err != nil {
 		return img, err
 	}
@@ -353,7 +353,8 @@ func LoadImage(id int) (*image.Gray, error) {
 	for x := 0; x < w; x++ {
 		for y := 0; y < h; y++ {
 			oldColor := pngImage.At(x, y)
-			grayColor := image.Image.ColorModel(color.GrayModel).Convert(oldColor)
+			//grayColor := image.Image.ColorModel(color.GrayModel).Convert(oldColor)
+			grayColor:=color.Model(color.GrayModel).Convert(oldColor)
 			gray.Set(x, y, grayColor)
 		}
 	}

@@ -39,7 +39,7 @@ func (self *TileSet) GetNewTileID() (uint32, error) {
 }
 
 func (self *TileSet) updateTileToDB(tile Tile, index int) error {
-	onDisk := Exists(folder + "tiles/" + strconv.Itoa(int(tile.Id)))
+	onDisk := Exists(folder + "tileImage/" + strconv.Itoa(int(tile.Id)))
 	//var onDisk int
 	//if onDiskBool{
 	//	onDisk=1

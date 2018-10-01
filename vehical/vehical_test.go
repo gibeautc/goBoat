@@ -221,14 +221,15 @@ func TestGetDiskSpaceOfPathMB(t *testing.T) {
 }
 
 func TestTile_UnPickle(t *testing.T) {
+	ts:=new(TileSet)
+	ts.Init()
 	tile := NewTile()
 	tile.Id = 0
 	tile.Compress()
-	tile.Pickle()
+	ts.Pickle(*tile)
 
-	tile = NewTile()
-	tile.Id = 0
-	err := tile.UnPickle()
+
+	tile,err := ts.UnPickle(0)
 	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
@@ -256,14 +257,14 @@ func TestTileSet_GetIdByPoint(t *testing.T) {
 
 func TestTile_GetPixelByCords(t *testing.T) {
 	tile := NewTile()
-	tile.NW.Lat = 44.0
-	tile.NW.Lon = -123.0
-	tile.NE.Lat = 44.0
-	tile.NE.Lon = -124.0
-	tile.SE.Lat = 43.0
-	tile.SE.Lon = -124.0
-	tile.SW.Lat = 43.0
-	tile.SW.Lon = -123.0
+	tile.Bounds.NW.Lat = 44.0
+	tile.Bounds.NW.Lon = -123.0
+	tile.Bounds.NE.Lat = 44.0
+	tile.Bounds.NE.Lon = -124.0
+	tile.Bounds.SE.Lat = 43.0
+	tile.Bounds.SE.Lon = -124.0
+	tile.Bounds.SW.Lat = 43.0
+	tile.Bounds.SW.Lon = -123.0
 
 	var p Point
 	p.Lat = 43.5
@@ -277,14 +278,14 @@ func TestTile_GetPixelByCords(t *testing.T) {
 
 func TestTile_SaveImage(t *testing.T) {
 	tile := NewTile()
-	tile.NW.Lat = 44.0
-	tile.NW.Lon = -123.0
-	tile.NE.Lat = 44.0
-	tile.NE.Lon = -124.0
-	tile.SE.Lat = 43.0
-	tile.SE.Lon = -124.0
-	tile.SW.Lat = 43.0
-	tile.SW.Lon = -123.0
+	tile.Bounds.NW.Lat = 44.0
+	tile.Bounds.NW.Lon = -123.0
+	tile.Bounds.NE.Lat = 44.0
+	tile.Bounds.NE.Lon = -124.0
+	tile.Bounds.SE.Lat = 43.0
+	tile.Bounds.SE.Lon = -124.0
+	tile.Bounds.SW.Lat = 43.0
+	tile.Bounds.SW.Lon = -123.0
 	tile.Id = 0
 
 	var cur, obj Point
