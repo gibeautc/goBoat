@@ -253,7 +253,7 @@ func (self *TileSet) LoadTileForPoint(p Point) (int, error) {
 	t := NewTile()
 	t.Id, err = self.GetNewTileID()
 	//todo need to create tile bounds, .....not trival
-	fmt.Println("had to create new tile for point, but it has not bounds.......")
+	fmt.Println("had to create new tile for point, but it has no bounds.......")
 	if err != nil {
 		return 0, err
 	}

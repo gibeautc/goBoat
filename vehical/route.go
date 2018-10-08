@@ -178,15 +178,12 @@ func (self *PolySet) MinMaxY() (float64, float64) {
 }
 
 func Draw(pS *PolySet, rT *Route, start Point, end Point) {
-	//for this view, min and max should be for the Route, not the polySet
-	//minX, maxX := pS.MinMaxX()
-	//minY, maxY := pS.MinMaxY()
 	minX, maxX := rT.MinMaxX()
 	minY, maxY := rT.MinMaxY()
 	imgSize := 2000
 	r := image.Rect(0, 0, imgSize+int(float64(imgSize)*.25), imgSize+int(float64(imgSize)*.25))
 	var sP, eP Point
-	img := image.NewAlpha(r)
+	img := image.NewGray(r)
 
 	for x := 0; x < pS.count; x++ {
 		for y := 0; y < pS.poly[x].corners-1; y++ {
@@ -205,26 +202,26 @@ func Draw(pS *PolySet, rT *Route, start Point, end Point) {
 		drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 	}
 
-	SaveImage(img, "world.png")
+	SaveImage(img, "../world.png")
 	if rT != nil {
 		if rT.Count == 0 {
 			//direct Route, only need to draw start to finish
 			drawRtLine(img, start, end, minX, maxX, minY, maxY, imgSize, true)
-			SaveImage(img, "Route.png")
+			SaveImage(img, "../Route.png")
 			return
 		}
 		//we have more nodes
 		drawRtLine(img, start, rT.Points[0], minX, maxX, minY, maxY, imgSize, true)
 		imageCount := 0
-		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".png")
+		SaveImage(img, "../Route"+strconv.Itoa(imageCount)+".png")
 		imageCount++
 		for x := 0; x < rT.Count-1; x++ {
 			drawRtLine(img, rT.Points[x], rT.Points[x+1], minX, maxX, minY, maxY, imgSize, true)
-			SaveImage(img, "Route"+strconv.Itoa(imageCount)+".png")
+			SaveImage(img, "../Route"+strconv.Itoa(imageCount)+".png")
 			imageCount++
 		}
 		drawRtLine(img, rT.Points[rT.Count-1], end, minX, maxX, minY, maxY, imgSize, true)
-		SaveImage(img, "Route"+strconv.Itoa(imageCount)+".png")
+		SaveImage(img, "../Route"+strconv.Itoa(imageCount)+".png")
 	}
 
 }
@@ -234,7 +231,7 @@ func DrawWorld(pS *PolySet) {
 	imgSize := 2000
 	r := image.Rect(0, 0, imgSize+int(float64(imgSize)*.25), imgSize+int(float64(imgSize)*.25))
 	var sP, eP Point
-	img := image.NewAlpha(r)
+	img := image.NewGray(r)
 
 	for x := 0; x < pS.count; x++ {
 		for y := 0; y < pS.poly[x].corners-1; y++ {
@@ -253,7 +250,7 @@ func DrawWorld(pS *PolySet) {
 		drawRtLine(img, sP, eP, minX, maxX, minY, maxY, imgSize, false)
 	}
 
-	SaveImage(img, "world.png")
+	SaveImage(img, "../world.png")
 }
 
 func drawRtLine(img draw.Image, start Point, end Point, minX float64, maxX float64, minY float64, maxY float64, imgSize int, isRoute bool) {
@@ -262,12 +259,14 @@ func drawRtLine(img draw.Image, start Point, end Point, minX float64, maxX float
 	sP.Y = mapFloatToInt(start.Lat, minY, maxY, 0, imgSize)
 	eP.X = mapFloatToInt(end.Lon, minX, maxX, 0, imgSize)
 	eP.Y = mapFloatToInt(end.Lat, minY, maxY, 0, imgSize)
-	//fmt.Printf("Drawing line from lonLst: %d latLst: %d TO lonLst:%d latLst:%d\n", sP.X, sP.Y, eP.X, eP.Y)
 	if isRoute {
-		c := color.Alpha16{A: 0xFF0F}
+		c := color.Gray{}
+		c.Y=100
 		drawLine(img, sP, eP, c)
 	} else {
-		drawLine(img, sP, eP, color.White)
+		c := color.Gray{}
+		c.Y=100
+		drawLine(img, sP, eP, c)
 	}
 
 }
